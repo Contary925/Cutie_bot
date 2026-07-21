@@ -1,11 +1,16 @@
 from collections.abc import Callable
 from functions.ping import ping
 from functions.shutdown import shutdown
+from functions.boop import boop
+from functions.interactions import *
 import inspect #to decide which parameters are actually needed to a function in the function map
 
 function_map: dict[str, Callable] = {
     "ping" : ping,
     "shutdown": shutdown,
+    "hug": hug,
+    "kiss": kiss,
+    "тык": boop,
 }
 
 async def call_function(client, message, content) :

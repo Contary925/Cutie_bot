@@ -1,6 +1,6 @@
 def cutword(text, word) : #cuts the word off the beginning of the text, if text really starts with the word.
 #cuts space(s) after the word off as well.
-    if text.startswith(word):
+    if text.lower().startswith(word.lower()):
         cut = text[len(word):]
         while cut.startswith(" "):
             cut = cut[1:]
