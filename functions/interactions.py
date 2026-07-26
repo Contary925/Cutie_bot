@@ -15,7 +15,10 @@ async def kiss(client, message, content) :
 async def getinfo(client, message, content) :
     id1 = message.author.id
     name1 = message.author.display_name
+    user1 = User(id1, name1)
     try :
+        if content in user1.alias :
+            content = user1.alias[content]
         id2 = content.split("<@")[1].split(">")[0]
         info2 = await client.fetch_user(id2)
         name2 = info2.display_name  
