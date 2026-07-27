@@ -5,7 +5,7 @@ async def sync_to_github(message):
         subprocess.run(["git", "add", "."], check=True)
         commit_message = "Auto-commit on bot shutdown"
         subprocess.run(["git", "commit", "-m", commit_message], check=True)
-        subprocess.run(["git", "push"], check=True, stdout=subprocess.DEVNULL)
+        subprocess.run(["git", "push", "origin", "main"], check=True, stdout=subprocess.DEVNULL)
         await message.channel.send("Uploaded successfully!")
         return True
     except subprocess.CalledProcessError as e:
