@@ -8,13 +8,15 @@ class User() :
         self.name = name
         self.data = self.read_data(self.id)
         self.alias = self.read_alias(self.data)
+        self.interactions = self.read_interactions(self.data)
 
     def read_data(self, id) -> dict :
         with open('shared/user_data.json', 'r+') as f:
             data = json.load(f)
         if not id in data: #that's a new user! need to initialize data here
             data[id] = {
-                "alias" : {}
+                "alias" : {},
+                "interactions": {},
             }
         with open('shared/user_data.json', 'w') as f:
                 json.dump(data, f)
@@ -23,15 +25,21 @@ class User() :
     def data_update(self, key, value) : #a function to use if a key is missing in user data for whatever reason
         with open('shared/user_data.json', 'r+') as f:
             data = json.load(f)
-        if not key in data[id]: 
-            data[id][key] = value
+        if not key in data[self.id]: 
+            data[self.id][key] = value
         with open('shared/user_data.json', 'w') as f:
             json.dump(data, f)
+        self.data[key] = value
         
     def read_alias(self, data) -> dict :
         if not "alias" in data :
             self.data_update("alias", {})
         return data["alias"]
+
+    def read_interactions(self, data) -> dict:
+        if not "interactions" in data :
+            self.data_update("interactions", {})
+        return data["interactions"]
     
     def update_alias(self, alias_key, alias_value) :
         self.read_alias(self.data) #returns nothing, but guaratnees that the alias dict exists
@@ -40,7 +48,23 @@ class User() :
         data[self.id]["alias"][alias_key] = alias_value
         with open('shared/user_data.json', 'w') as f:
             json.dump(data, f)
+        self.alias[alias_key] = alias_value
         return 1
+
+    def add_interaction(self, other, type) :
+        with open('shared/user_data.json', 'r+') as f:
+            data = json.load(f)
+        if not "interactions" in data[self.id] :    
+            data[self.id]["interactions"] = {}
+        if not type in data[self.id]["interactions"] :
+            data[self.id]["interactions"][type] = {}
+        if not other.id in data[self.id]["interactions"][type] :
+            data[self.id]["interactions"][type][other.id] = 0
+        data[self.id]["interactions"][type][other.id] += 1
+        with open('shared/user_data.json', 'w') as f:
+            json.dump(data, f)
+        self.interactions = data[self.id]["interactions"]
+        return self.interactions[type][other.id]
     
     def delete_alias(self, alias_key) :
         self.read_alias(self.data) #returns nothing, but guaratnees that the alias dict exists
@@ -53,19 +77,49 @@ class User() :
             return 1
         return 0
 
+    def check_interaction(self, other, type) :
+        if not type in self.interactions :
+            return 0
+        if not other.id in self.interactions[type] :
+            return 0
+        return self.interactions[type][other.id]
 
     async def hug(self, other, message) :
-        url = 'https://media.tenor.com/hacbVpDut3sAAAAM/hug.gif'
-        await self.send_embed(message, f"{self.name} hugs {other.name}!", url)
+        url = 'https://c.tenor.com/BnB2TTVrcAMAAAAC/tenor.gif'
+        num_hugs = self.add_interaction(other, "hug")
+        if num_hugs == 1 :
+            await self.send_embed(message, f"{self.name} hugs {other.name}! That's their first hug!", url)
+        else :
+            await self.send_embed(message, f"{self.name} hugs {other.name}! That's {num_hugs} hugs now!", url)
     
     async def kiss(self, other, message) :
         url = 'https://media.tenor.com/kmxEaVuW8AoAAAAd/kiss-gentle-kiss.gif'
-        await self.send_embed(message, f"{self.name} kisses {other.name}!", url)
+        num_kisses = self.add_interaction(other, "kiss")
+        if num_kisses == 1 :
+            await self.send_embed(message, f"{self.name} kisses {other.name}! That's their first kiss!", url)
+        else :
+            await self.send_embed(message, f"{self.name} kisses {other.name}! That's {num_kisses} kisses now!", url)
+
+    async def bite(self, other, message) :
+        url = 'https://c.tenor.com/htI5TkSvyYEAAAAC/tenor.gif'
+        num_bites = self.add_interaction(other, "bite")
+        if num_bites == 1 :
+            await self.send_embed(message, f"{self.name} bites {other.name}! That's their first bite!", url)
+        else :
+            await self.send_embed(message, f"{self.name} bites {other.name}! That's {num_bites} bites now!", url)
+
+    async def pat(self, other, message) :
+        url = 'https://c.tenor.com/5Epx4bEKJA4AAAAC/tenor.gif'
+        num_pats = self.add_interaction(other, "pat")
+        if num_pats == 1 :
+            await self.send_embed(message, f"{self.name} pats {other.name}! That's their first pat!", url)
+        else :
+            await self.send_embed(message, f"{self.name} pats {other.name}! That's {num_pats} pats now!", url)
 
     async def send_embed(self, message, title, url) :
         embed = discord.Embed(
             title=title,
-            color = 0xF79AFF,
+            color =0xE8D1EA,
         )
         embed.set_image(
             url = url

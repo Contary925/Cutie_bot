@@ -18,6 +18,24 @@ async def kiss(client, message, content) :
     user2 = User(id2, name2)
     await user1.kiss(user2, message)
 
+async def bite(client, message, content) :
+    info = await getinfo(client, message, content)
+    if not info :
+        return 0
+    [id1, name1, id2, name2] = info
+    user1 = User(id1, name1)
+    user2 = User(id2, name2)
+    await user1.bite(user2, message)
+
+async def pat(client, message, content) :
+    info = await getinfo(client, message, content)
+    if not info:
+        return 0
+    [id1, name1, id2, name2] = info
+    user1 = User(id1, name1)
+    user2 = User(id2, name2)
+    await user1.pat(user2, message)
+
 async def getinfo(client, message, content) :
     id1 = message.author.id
     name1 = message.author.display_name
