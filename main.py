@@ -1,3 +1,6 @@
+from auto_git_pull import pull_from_github
+pull_from_github()
+
 from shared.ID import *
 from login import log_in
 [client, api_key] = log_in()
