@@ -7,8 +7,11 @@ wheels/
 *.egg-info
 
 #Special sensitive info
-ID.py
+ID.pi
 
 # Virtual environments
 .venv
 .env
+
+#proxy config
+local_proxy.txt
