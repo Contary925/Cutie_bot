@@ -1,4 +1,5 @@
 from auto_git_pull import pull_from_github
+import discord
 pull_from_github()
 
 from shared.ID import *
@@ -8,6 +9,7 @@ from functions.on_msg import on_msg
 
 @client.event
 async def on_ready() :
+    await client.change_presence(activity=discord.Game(name="uwu help"))
     print(f"Logged in as {client.user}")
 
 @client.event
