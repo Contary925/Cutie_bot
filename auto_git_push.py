@@ -9,5 +9,5 @@ async def sync_to_github(message):
         await message.channel.send("Uploaded successfully!")
         return True
     except subprocess.CalledProcessError as e:
-        message.channel.send(f"Git sync failed with error: {e}")
+        await message.channel.send(f"Git sync failed with error: {e}")
         return False
