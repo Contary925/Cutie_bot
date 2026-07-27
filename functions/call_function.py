@@ -5,6 +5,7 @@ from functions.boop import boop
 from functions.interactions import *
 from functions.alias import *
 from functions.cutword import cutword
+from functions.help import help
 from auto_git_push import sync_to_github
 import inspect #to decide which parameters are actually needed to a function in the function map
 
