@@ -116,6 +116,13 @@ class User() :
         else :
             await self.send_embed(message, f"{self.name} pats {other.name}! That's {num_pats} pats now!", url)
 
+    async def spank(self, other, message) :
+        num_spanks = self.add_interaction(other, "spank")
+        if num_spanks == 1 :
+            await message.channel.send(f"{self.name} gave {other.name} a spank! That's their first spank!")
+        else :
+            await message.channel.send(f"{self.name} gave {other.name} a spank! That's {num_spanks} spanks now!")
+
     async def send_embed(self, message, title, url) :
         embed = discord.Embed(
             title=title,
