@@ -5,6 +5,7 @@ from functions.boop import boop
 from functions.interactions import *
 from functions.alias import *
 from functions.cutword import cutword
+from auto_git_push import sync_to_github
 import inspect #to decide which parameters are actually needed to a function in the function map
 
 function_map: dict[str, Callable] = {
@@ -19,6 +20,7 @@ function_map: dict[str, Callable] = {
     "alias_add": alias_add,
     "alias_remove": alias_remove,
     "alias_list" : alias_list,
+    "gitpush" : sync_to_github,
 }
 
 function_alias: dict[str, str] = {
