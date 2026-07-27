@@ -21,6 +21,7 @@ function_map: dict[str, Callable] = {
     "alias_remove": alias_remove,
     "alias_list" : alias_list,
     "gitpush" : sync_to_github,
+    "help" : help,
 }
 
 function_alias: dict[str, str] = {
