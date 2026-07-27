@@ -17,6 +17,7 @@ function_map: dict[str, Callable] = {
     "boop": boop,
     "bite": bite,
     "pat": pat,
+    "spank": spank,
     "alias": alias,
     "alias_add": alias_add,
     "alias_remove": alias_remove,
@@ -34,6 +35,8 @@ function_alias: dict[str, str] = {
     "ням": "bite",
     "pet" : "pat",
     "пат" : "pat",
+    "спанк" : "spank",
+    "шпаньк" : "spank",
 }
 
 async def call_function(client, message, content) :
