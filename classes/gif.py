@@ -1,6 +1,7 @@
 import json
 import discord
 import asyncio
+import random
 
 class Gif:
     def __init__(self, client, message, type, url) :
@@ -15,15 +16,18 @@ class Gif:
             gifs = json.load(f)
         return gifs
 
-    async def check(self):
+    async def send(self, title) :
         embed = discord.Embed(
-             title="Is this a valid gif? Confirm by pressing ✅, or decline by pressing ❌.",
+            title=title,
             color =0xE8D1EA,
-        )
+            )
         embed.set_image(
             url = self.url
         )
-        bot_message = await self.message.channel.send(embed = embed)
+        return await self.message.channel.send(embed = embed)
+
+    async def check(self):
+        bot_message = await self.send("Is this a valid gif? Confirm by pressing ✅, or decline by pressing ❌.")
         await bot_message.add_reaction("✅")
         await bot_message.add_reaction("❌")
 
@@ -52,4 +56,11 @@ class Gif:
         with open('shared/gifs.json', 'w') as f:
             json.dump(self.gifs, f)
         return "Added successfully!"
+
+    def select_random(self) :
+        if not self.type in self.gifs:
+            return None
+        gifs_list = self.gifs[self.type]
+        selected_gif_url = random.choice(gifs_list)
+        return selected_gif_url
     

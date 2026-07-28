@@ -1,5 +1,6 @@
 import discord
 import json
+from classes.gif import Gif
 
 class User() :
 
@@ -85,7 +86,10 @@ class User() :
         return self.interactions[type][other.id]
 
     async def hug(self, other, message) :
-        url = 'https://c.tenor.com/BnB2TTVrcAMAAAAC/tenor.gif'
+        #url = 'https://c.tenor.com/BnB2TTVrcAMAAAAC/tenor.gif'
+        url = Gif(None, None, "hug", None).select_random()
+        if not url:
+            return await message.channel.send("Looks like there are no gifs of the specified type. Consider adding some before running this command.")
         num_hugs = self.add_interaction(other, "hug")
         if num_hugs == 1 :
             await self.send_embed(message, f"{self.name} hugs {other.name}! That's their first hug!", url)
