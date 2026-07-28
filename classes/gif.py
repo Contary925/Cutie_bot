@@ -29,11 +29,11 @@ class Gif:
 
         def reaction_check(reaction, user): #checking if it's the same message, same person, and a valid reaction
             return (
-                user == self.message.author and reaction.message.id == self.message.id 
+                user == self.message.author and reaction.message.id == bot_message.id 
                 and str(reaction.emoji) in ["✅", "❌"]
             )
         try :
-            reaction, user = await self.client.wait_for('reaction_add', timeout=15.0, check=reaction_check)
+            reaction, user = await self.client.wait_for('reaction_add', timeout=30.0, check=reaction_check)
         except asyncio.TimeoutError:
             await self.message.channel.send("Action declined - no confirmation received.")
         else :
