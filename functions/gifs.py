@@ -8,9 +8,15 @@ async def gif(client, message, content):
         await message.channel.send("Available functions: gif add, gif remove")
 
 async def gif_add(message, content):
-    url = content
-    gif = Gif(message, None, url)
-    gif.check()
+    args = content.split(' ', maxsplit=1)
+    if not len(args) == 2 :
+        return await message.channel.send("Invalid arguments! Usage: gif add gif_type your_gif_url_here")
+    [type, url] = args
+    gif = Gif(message, type, url)
+    await gif.check()
+    if gif_add() :
+        return await message.channel.send("Added successfully! (Kidding, just a check)")
+    return await message.channel.send("Something went wrong.")
 
 async def gif_remove(message, content):
     pass

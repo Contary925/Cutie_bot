@@ -8,7 +8,7 @@ class Gif:
         self.gifs = self.read_gifs()
         self.message = message
 
-    def read_gifs() :
+    def read_gifs(self) :
         with open('shared/gifs.json', 'r+') as f:
             gifs = json.load(f)
         return gifs
@@ -24,4 +24,7 @@ class Gif:
         bot_message = await self.message.channel.send(embed = embed)
         await bot_message.add_reaction("✅")
         await bot_message.add_reaction("❌")
+
+    async def add(self) :
+        pass
     
