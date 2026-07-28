@@ -28,7 +28,7 @@ function_map: dict[str, Callable] = {
     "gif" : gif,
     "gif_add" : gif_add,
     "gif_remove" : gif_remove,
-
+    "gif_list" : gif_list,
 }
 
 function_alias: dict[str, str] = {
@@ -47,6 +47,8 @@ function_alias: dict[str, str] = {
     "gif_удалить" : gif_remove,
     "gif_убрать" : gif_remove,
     "gif_remove" : gif_remove,
+    "gif_лист" : gif_list,
+    "gif_список" : gif_list,
 }
 
 async def call_function(client, message, content) :

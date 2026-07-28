@@ -12,8 +12,17 @@ async def gif_add(client, message, content):
     if not len(args) == 2 :
         return await message.channel.send("Invalid arguments! Usage: gif add gif_type your_gif_url_here")
     [type, url] = args
+    if not type in ["hug", "pat", "kiss", "bite"] :
+        return await message.channel.send("Wrong gif type!")
     gif = Gif(client, message, type, url)
     await gif.check()
+
+async def gif_list(message, content) :
+    type = content
+    if not type in ["hug", "pat", "kiss", "bite"] :
+        return await message.channel.send("Wrong gif type!")
+    git = Gif(None, message, type, None)
+    await gif.list()
 
 async def gif_remove(message, content):
     pass

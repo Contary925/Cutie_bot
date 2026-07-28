@@ -63,4 +63,16 @@ class Gif:
         gifs_list = self.gifs[self.type]
         selected_gif_url = random.choice(gifs_list)
         return selected_gif_url
+
+    async def list(self) :
+        if not self.type in self.gifs:
+            return await self.message.channel.send("No gifs of this type yet!")
+        gifs_list = self.gifs[self.type]
+        content = f"Gifs of the {self.type} type:\n"
+        for i in range(0, max(len(gifs_list)-1), 19) :
+            content += f"{i+1}. {gifs_list[i]}\n"
+            if i==19 :
+                content += "Cannot list even more..."
+        await self.message.channel.send(content)
+
     
