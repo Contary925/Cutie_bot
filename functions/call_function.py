@@ -6,6 +6,7 @@ from functions.interactions import *
 from functions.alias import *
 from functions.cutword import cutword
 from functions.help import help
+from functions.gifs import *
 from auto_git_push import sync_to_github
 import inspect #to decide which parameters are actually needed to a function in the function map
 
@@ -24,6 +25,10 @@ function_map: dict[str, Callable] = {
     "alias_list" : alias_list,
     "gitpush" : sync_to_github,
     "help" : help,
+    "gif" : gif,
+    "gif_add" : gif_add,
+    "gif_remove" : gif_remove,
+
 }
 
 function_alias: dict[str, str] = {
@@ -37,6 +42,11 @@ function_alias: dict[str, str] = {
     "пат" : "pat",
     "спанк" : "spank",
     "шпаньк" : "spank",
+    "гиф" : gif,
+    "gif_адд" : gif_add,
+    "gif_удалить" : gif_remove,
+    "gif_убрать" : gif_remove,
+    "gif_remove" : gif_remove,
 }
 
 async def call_function(client, message, content) :
