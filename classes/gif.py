@@ -38,14 +38,18 @@ class Gif:
             await self.message.channel.send("Action declined - no confirmation received.")
         else :
             if str(reaction.emoji) == "✅" :
-                try :
-                    self.add()
-                    await self.message.channel.send("Added successfully!")
-                except Exception as e:
-                    await self.message.channel.send(f"Failed to add with error: {e}")
+                result = self.add()
+                await self.message.channel.send(result)
             if str(reaction.emoji) == "❌" :
                 await self.message.channel.send("Action declined by user.")
 
     def add(self) :
-        pass
+        if not self.type in self.gifs :
+            self.gifs[self.type] = [] #finally, a list instead of a dict
+        if self.url in self.gifs[self.type] :
+            return "The gif is already in the list!"
+        self.gifs[self.type].append(self.url)
+        with open('shared/gifs.json', 'w') as f:
+            json.dump(self.gifs, f)
+        return "Added successfully!"
     
