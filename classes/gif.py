@@ -28,9 +28,15 @@ class Gif:
 
     async def check(self):
         bot_message = await self.send("Is this a valid gif? Confirm by pressing ✅, or decline by pressing ❌.")
+        check_result = self.check_confirmation()
+        if check_result == 1:
+            result = self.add()
+            return await self.message.channel.send(result)
+        return await self.message.channel.send("Action declined by user.")
+
+    async def check_confirmation(self, bot_message) :
         await bot_message.add_reaction("✅")
         await bot_message.add_reaction("❌")
-
         def reaction_check(reaction, user): #checking if it's the same message, same person, and a valid reaction
             return (
                 user == self.message.author and reaction.message.id == bot_message.id 
@@ -42,10 +48,9 @@ class Gif:
             await self.message.channel.send("Action declined - no confirmation received.")
         else :
             if str(reaction.emoji) == "✅" :
-                result = self.add()
-                await self.message.channel.send(result)
+                return 1
             if str(reaction.emoji) == "❌" :
-                await self.message.channel.send("Action declined by user.")
+                return 0
 
     def add(self) :
         if not self.type in self.gifs :
@@ -69,10 +74,23 @@ class Gif:
             return await self.message.channel.send("No gifs of this type yet!")
         gifs_list = self.gifs[self.type]
         content = f"Gifs of the {self.type} type:\n"
-        for i in range(0, max(len(gifs_list)-1), 19) :
+        for i in range(0, min(len(gifs_list), 20)) :
             content += f"{i+1}. {gifs_list[i]}\n"
             if i==19 :
                 content += "Cannot list even more..."
         await self.message.channel.send(content)
 
-    
+    async def remove(self, index) :
+        if not self.type in self.gifs :
+            return await self.message.channel.send("There are no gifs of this type!")
+        if index > len(self.gifs[self.type]) :
+            return await self.message.channel.send(f"There is no gif with such index. Double check with gif list {self.type}!")
+        self.url = self.gifs[self.type][index-1]
+        bot_message = self.send("Is this the gif you want to remove?")
+        check_result = self.check_confirmation()
+        if check_result == 1:
+            del self.gifs[self.type[index-1]]
+            with open('shared/gifs.json', 'w') as f:
+                json.dump(self.gifs, f)
+            return await self.message.channel.send("Gif successfully removed from the list!")
+        return await self.message.channel.send("Action declined by user.")

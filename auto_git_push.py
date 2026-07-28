@@ -2,7 +2,7 @@ import subprocess
 from shared.ID import OWNER_ID
 from functions.check_owner import check_owner
 async def sync_to_github(message):
-    if await check_owner() :
+    if await check_owner(message) :
         try:
             await message.channel.send("Uploading to GitHub...")
             subprocess.run(["git", "add", "."], check=True)
