@@ -4,6 +4,7 @@ The prefix to use me is '**uwu**' (or '**уву**') - use it every time you want
 Here are some of my commands:
 **Interactions**: hug, kiss, pat, bite
 **Alias**: alias add, alias remove, alias list
+**Gifs**: gif add, gif remove, gif list
 **Misc.**: ping, boop
 **Owner only**: shutdown, gitpush"""
     await message.channel.send(text)

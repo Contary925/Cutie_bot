@@ -66,11 +66,15 @@ class Gif:
         if not self.type in self.gifs:
             return None
         gifs_list = self.gifs[self.type]
+        if gifs_list == [] :
+            return None
         selected_gif_url = random.choice(gifs_list)
         return selected_gif_url
 
     async def list(self) :
         if not self.type in self.gifs:
+            return await self.message.channel.send("No gifs of this type yet!")
+        if self.gifs[self.type] == [] :
             return await self.message.channel.send("No gifs of this type yet!")
         gifs_list = self.gifs[self.type]
         content = f"Gifs of the {self.type} type:\n"
