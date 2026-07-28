@@ -17,19 +17,20 @@ async def gif_add(client, message, content):
     gif = Gif(client, message, type, url)
     await gif.check()
 
-async def gif_list(message, content) :
+async def gif_list(client, message, content) :
     type = content
     if not type in ["hug", "pat", "kiss", "bite"] :
         return await message.channel.send("Wrong gif type!")
-    gif = Gif(None, message, type, None)
+    gif = Gif(client, message, type, None)
     await gif.list()
 
-async def gif_remove(message, content):
+async def gif_remove(client, message, content):
     args = content.split(' ', maxsplit=1)
     if not len(args) == 2 :
         return await message.channel.send("Invalid arguments! Usage: gif remove gif_type gif_index (check index from the list)")
     [type, index] = args
-    if not isinstance(index, int) :
+    if not index.isdigit() :
         return await message.channel.send("Invalid index!")
-    gif = Gif(None, message, type, None)
+    index = int(index)
+    gif = Gif(client, message, type, None)
     await gif.remove(index)

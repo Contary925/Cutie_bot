@@ -28,7 +28,7 @@ class Gif:
 
     async def check(self):
         bot_message = await self.send("Is this a valid gif? Confirm by pressing ✅, or decline by pressing ❌.")
-        check_result = self.check_confirmation()
+        check_result = await self.check_confirmation(bot_message)
         if check_result == 1:
             result = self.add()
             return await self.message.channel.send(result)
@@ -78,7 +78,25 @@ class Gif:
             content += f"{i+1}. {gifs_list[i]}\n"
             if i==19 :
                 content += "Cannot list even more..."
-        await self.message.channel.send(content)
+        index = 0
+        bot_message = await self.message.channel.send(content, embed=discord.Embed(title=f"Gif {index + 1} of {len(gifs_list)}").set_image(url=gifs_list[index]))
+        await bot_message.add_reaction("◀️")
+        await bot_message.add_reaction("▶️")
+        while True:
+            try:
+                res, user = await self.client.wait_for(
+                    "reaction_add", 
+                    timeout=60.0, 
+                    check=lambda r, u: u == self.message.author and r.message.id == bot_message.id and str(r.emoji) in ["◀️", "▶️"]
+                )
+                index = (index + 1 if str(res.emoji) == "▶️" else index - 1) % len(gifs_list)
+                await bot_message.edit(embed=discord.Embed(title=f"Gif {index + 1} of {len(gifs_list)}").set_image(url=gifs_list[index]))
+                await bot_message.remove_reaction(res.emoji, user)
+            except asyncio.TimeoutError:
+                await bot_message.remove_reaction("▶️", self.client.user)
+                await bot_message.remove_reaction("◀️", self.client.user)
+                await bot_message.edit(content = f"{content}\nButtons are now unavailable since 60 seconds have past.")
+                break
 
     async def remove(self, index) :
         if not self.type in self.gifs :
@@ -86,10 +104,10 @@ class Gif:
         if index > len(self.gifs[self.type]) :
             return await self.message.channel.send(f"There is no gif with such index. Double check with gif list {self.type}!")
         self.url = self.gifs[self.type][index-1]
-        bot_message = self.send("Is this the gif you want to remove?")
-        check_result = self.check_confirmation()
+        bot_message = await self.send("Is this the gif you want to remove?")
+        check_result = await self.check_confirmation(bot_message)
         if check_result == 1:
-            del self.gifs[self.type[index-1]]
+            del self.gifs[self.type][index-1]
             with open('shared/gifs.json', 'w') as f:
                 json.dump(self.gifs, f)
             return await self.message.channel.send("Gif successfully removed from the list!")

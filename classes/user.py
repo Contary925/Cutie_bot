@@ -85,10 +85,17 @@ class User() :
             return 0
         return self.interactions[type][other.id]
 
-    async def hug(self, other, message) :
-        url = Gif(None, None, "hug", None).select_random()
+    async def get_random_gif(self, type, message):
+        url = Gif(None, None, type, None).select_random()
         if not url:
-            return await message.channel.send("Looks like there are no gifs of the specified type. Consider adding some before running this command.")
+            await message.channel.send("Looks like there are no gifs of the specified type. Consider adding some before running this command.")
+            return None
+        return url
+    
+    async def hug(self, other, message) :
+        url = await self.get_random_gif("hug", message)
+        if not url:  #a message already sent by the get_random_gif method
+            return
         num_hugs = self.add_interaction(other, "hug")
         if num_hugs == 1 :
             await self.send_embed(message, f"{self.name} hugs {other.name}! That's their first hug!", url)
@@ -96,7 +103,9 @@ class User() :
             await self.send_embed(message, f"{self.name} hugs {other.name}! That's {num_hugs} hugs now!", url)
     
     async def kiss(self, other, message) :
-        url = 'https://media.tenor.com/kmxEaVuW8AoAAAAd/kiss-gentle-kiss.gif'
+        url = await self.get_random_gif("kiss", message)
+        if not url:
+            return
         num_kisses = self.add_interaction(other, "kiss")
         if num_kisses == 1 :
             await self.send_embed(message, f"{self.name} kisses {other.name}! That's their first kiss!", url)
@@ -104,7 +113,9 @@ class User() :
             await self.send_embed(message, f"{self.name} kisses {other.name}! That's {num_kisses} kisses now!", url)
 
     async def bite(self, other, message) :
-        url = 'https://c.tenor.com/htI5TkSvyYEAAAAC/tenor.gif'
+        url = await self.get_random_gif("bite", message)
+        if not url:
+            return
         num_bites = self.add_interaction(other, "bite")
         if num_bites == 1 :
             await self.send_embed(message, f"{self.name} bites {other.name}! That's their first bite!", url)
@@ -112,7 +123,7 @@ class User() :
             await self.send_embed(message, f"{self.name} bites {other.name}! That's {num_bites} bites now!", url)
 
     async def pat(self, other, message) :
-        url = 'https://c.tenor.com/5Epx4bEKJA4AAAAC/tenor.gif'
+        url = await self.get_random_gif("pat", message)
         num_pats = self.add_interaction(other, "pat")
         if num_pats == 1 :
             await self.send_embed(message, f"{self.name} pats {other.name}! That's their first pat!", url)
