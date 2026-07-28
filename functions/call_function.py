@@ -42,13 +42,13 @@ function_alias: dict[str, str] = {
     "пат" : "pat",
     "спанк" : "spank",
     "шпаньк" : "spank",
-    "гиф" : gif,
-    "gif_адд" : gif_add,
-    "gif_удалить" : gif_remove,
-    "gif_убрать" : gif_remove,
-    "gif_remove" : gif_remove,
-    "gif_лист" : gif_list,
-    "gif_список" : gif_list,
+    "гиф" : "gif",
+    "gif_адд" : "gif_add",
+    "gif_удалить" : "gif_remove",
+    "gif_убрать" : "gif_remove",
+    "gif_ремув" : "gif_remove",
+    "gif_лист" : "gif_list",
+    "gif_список" : "gif_list",
 }
 
 async def call_function(client, message, content) :
