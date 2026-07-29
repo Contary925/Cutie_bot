@@ -49,7 +49,11 @@ class User() :
         return data["perms"]
 
     def set_perms(self, access_level) :
+        if self.perms == access_level :
+            return 0
         self.data_update("perms", access_level)
+        self.perms = access_level
+        return 1
     
     def update_alias(self, alias_key, alias_value) :
         self.read_alias(self.data) #returns nothing, but guaratnees that the alias dict exists
