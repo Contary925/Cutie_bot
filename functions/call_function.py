@@ -8,6 +8,7 @@ from functions.cutword import cutword
 from functions.help import help
 from functions.gifs import *
 from auto_git_push import sync_to_github
+from functions.perms import *
 import inspect #to decide which parameters are actually needed to a function in the function map
 
 function_map: dict[str, Callable] = {
@@ -29,6 +30,8 @@ function_map: dict[str, Callable] = {
     "gif_add" : gif_add,
     "gif_remove" : gif_remove,
     "gif_list" : gif_list,
+    "perms" : perms,
+    "perms_set": perms_set,
 }
 
 function_alias: dict[str, str] = {

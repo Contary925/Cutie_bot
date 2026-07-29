@@ -1,4 +1,3 @@
-#from functions.call_function import call_function
 import functions.call_function
 from classes.user import User
 

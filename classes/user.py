@@ -10,6 +10,7 @@ class User() :
         self.data = self.read_data(self.id)
         self.alias = self.read_alias(self.data)
         self.interactions = self.read_interactions(self.data)
+        self.perms = self.read_perms(self.data)
 
     def read_data(self, id) -> dict :
         with open('shared/user_data.json', 'r+') as f:
@@ -41,6 +42,14 @@ class User() :
         if not "interactions" in data :
             self.data_update("interactions", {})
         return data["interactions"]
+
+    def read_perms(self, data) -> str:
+        if not "perms" in data :
+            self.data_update("perms", "default")
+        return data["perms"]
+
+    def set_perms(self, access_level) :
+        self.data_update("perms", access_level)
     
     def update_alias(self, alias_key, alias_value) :
         self.read_alias(self.data) #returns nothing, but guaratnees that the alias dict exists
