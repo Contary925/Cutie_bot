@@ -45,8 +45,8 @@ async def spank(client, message, content) :
     user2 = User(id2, name2)
     await user1.spank(user2, message)
 
-async def lick(client, message) :
-    await User(None, None).lick()
+async def lick(message) :
+    await User(None, None).lick(message)
 
 async def getinfo(client, message, content) :
     id1 = message.author.id
