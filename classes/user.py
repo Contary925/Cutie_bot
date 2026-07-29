@@ -149,6 +149,10 @@ class User() :
         else :
             await message.channel.send(f"{self.name} gave <@{other.id}> a spank! That's {num_spanks} spanks now!")
 
+    async def lick(self,  message) :
+        url = await self.get_random_gif("lick", message)
+        await self.send_embed(message, None, url)
+
     async def send_embed(self, message, title, url) :
         embed = discord.Embed(
             title=title,
