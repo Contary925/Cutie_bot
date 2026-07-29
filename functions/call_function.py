@@ -1,7 +1,6 @@
 from collections.abc import Callable
 from functions.ping import ping
 from functions.shutdown import shutdown
-from functions.boop import boop
 from functions.interactions import *
 from functions.alias import *
 from functions.cutword import cutword

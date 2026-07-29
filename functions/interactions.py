@@ -48,6 +48,9 @@ async def spank(client, message, content) :
 async def lick(message) :
     await User(None, None).lick(message)
 
+async def boop(message):
+    await message.channel.send('<:meow:1065633351710548071>')
+
 async def getinfo(client, message, content) :
     id1 = message.author.id
     name1 = message.author.display_name
