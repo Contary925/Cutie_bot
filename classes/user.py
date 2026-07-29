@@ -27,8 +27,7 @@ class User() :
     def data_update(self, key, value) : #a function to use if a key is missing in user data for whatever reason
         with open('shared/user_data.json', 'r+') as f:
             data = json.load(f)
-        if not key in data[self.id]: 
-            data[self.id][key] = value
+        data[self.id][key] = value
         with open('shared/user_data.json', 'w') as f:
             json.dump(data, f)
         self.data[key] = value
