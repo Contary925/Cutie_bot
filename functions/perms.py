@@ -32,5 +32,5 @@ async def perms_set(client, message, content) :
     user_name = info.display_name  
     user = User(user_id, user_name)
     if not user.set_perms(access_level) :
-        return await message.channel.send(f"Failed to change permissions: {user_name} is already a {access_level} user!")
+        return await message.channel.send(f"Failed to change permissions: {user_name} already has {access_level} permissions!")
     return await message.channel.send(f"Permissions changed successfully! {user_name} now has {access_level} permissions.")

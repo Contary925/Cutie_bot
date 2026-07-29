@@ -1,5 +1,6 @@
 import functions.call_function
 from classes.gif import Gif
+from classes.user import User
 
 
 async def gif(client, message, content):
@@ -8,6 +9,9 @@ async def gif(client, message, content):
         await message.channel.send("Available functions: gif add, gif remove")
 
 async def gif_add(client, message, content):
+    user = User(message.author.id, None)
+    if not user.perms == "administrator" :
+        return await message.channel.send("This command can only be executed by an admin.")
     args = content.split(' ', maxsplit=1)
     if not len(args) == 2 :
         return await message.channel.send("Invalid arguments! Usage: gif add gif_type your_gif_url_here")
@@ -25,6 +29,9 @@ async def gif_list(client, message, content) :
     await gif.list()
 
 async def gif_remove(client, message, content):
+    user = User(message.author.id, None)
+    if not user.perms == "administrator" :
+        return await message.channel.send("This command can only be executed by an admin.")
     args = content.split(' ', maxsplit=1)
     if not len(args) == 2 :
         return await message.channel.send("Invalid arguments! Usage: gif remove gif_type gif_index (check index from the list)")
