@@ -4,10 +4,11 @@ from functions.shutdown import shutdown
 from functions.interactions import *
 from functions.alias import *
 from functions.cutword import cutword
-from functions.help import help
+from functions.help import *
 from functions.gifs import *
 from auto_git_push import sync_to_github
 from functions.perms import *
+from functions.react import react, react_add, react_remove
 import inspect #to decide which parameters are actually needed to a function in the function map
 
 function_map: dict[str, Callable] = {
@@ -26,12 +27,19 @@ function_map: dict[str, Callable] = {
     "alias_list" : alias_list,
     "gitpush" : sync_to_github,
     "help" : help,
+    "help_alias": help_alias,
+    "help_gifs": help_gifs,
+    "help_reactions": help_reactions,
+    "help_interactions": help_interactions,
     "gif" : gif,
     "gif_add" : gif_add,
     "gif_remove" : gif_remove,
     "gif_list" : gif_list,
     "perms" : perms,
     "perms_set": perms_set,
+    "react": react,
+    "react_add": react_add,
+    "react_remove": react_remove,
 }
 
 function_alias: dict[str, str] = {

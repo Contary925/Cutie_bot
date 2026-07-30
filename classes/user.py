@@ -66,7 +66,7 @@ class User() :
         with open('shared/user_data.json', 'r+') as f:
             data = json.load(f)
         data[self.id]["reactions"][text] = reaction
-        with open('shared/user_data./json', 'w') as f:
+        with open('shared/user_data.json', 'w') as f:
             json.dump(data, f)
         self.reactions[text] = reaction
         self.data_update("reactions", self.reactions)
