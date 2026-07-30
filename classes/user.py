@@ -11,6 +11,7 @@ class User() :
         self.alias = self.read_alias(self.data)
         self.interactions = self.read_interactions(self.data)
         self.perms = self.read_perms(self.data)
+        self.reactions = self.read_reactions(self.data)
 
     def read_data(self, id) -> dict :
         with open('shared/user_data.json', 'r+') as f:
@@ -53,6 +54,35 @@ class User() :
         self.data_update("perms", access_level)
         self.perms = access_level
         return 1
+
+    def read_reactions(self, data) -> str:
+        if not "reactions" in data:
+            self.data_update("reactions", {})
+        return data["reactions"]
+
+    def add_reaction(self, text, reaction) :
+        if text in self.reactions :
+            return 0 
+        with open('shared/user_data.json', 'r+') as f:
+            data = json.load(f)
+        data[self.id]["reactions"][text] = reaction
+        with open('shared/user_data./json', 'w') as f:
+            json.dump(data, f)
+        self.reactions[text] = reaction
+        self.data_update("reactions", self.reactions)
+        return 1
+
+    def delete_reaction(self, text) :
+        if not text in self.reactions :
+            return 0
+        with open('shared/user_data.json', 'r+') as f:
+            data = json.load(f)
+        data[self.id]["reactions"].pop(text, None)
+        with open('shared/user_data.json', 'w') as f:
+            json.dump(data, f)
+        self.reactions.pop(text, None)
+        self.data_update("reactions", self.reactions)
+        return 1
     
     def update_alias(self, alias_key, alias_value) :
         self.read_alias(self.data) #returns nothing, but guaratnees that the alias dict exists
@@ -62,6 +92,7 @@ class User() :
         with open('shared/user_data.json', 'w') as f:
             json.dump(data, f)
         self.alias[alias_key] = alias_value
+        self.data_update("alias", self.alias)
         return 1
 
     def add_interaction(self, other, type) :
