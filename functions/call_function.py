@@ -9,6 +9,7 @@ from functions.gifs import *
 from auto_git_push import sync_to_github
 from functions.perms import *
 from functions.react import react, react_add, react_remove
+from functions.reply import reply, reply_add, reply_remove
 import inspect #to decide which parameters are actually needed to a function in the function map
 
 function_map: dict[str, Callable] = {
@@ -40,6 +41,9 @@ function_map: dict[str, Callable] = {
     "react": react,
     "react_add": react_add,
     "react_remove": react_remove,
+    "reply": reply,
+    "reply_add": reply_add,
+    "reply_remove": reply_remove,
 }
 
 function_alias: dict[str, str] = {
@@ -61,6 +65,7 @@ function_alias: dict[str, str] = {
     "gif_ремув" : "gif_remove",
     "gif_лист" : "gif_list",
     "gif_список" : "gif_list",
+    "reaction" : "react",
 }
 
 async def call_function(client, message, content) :

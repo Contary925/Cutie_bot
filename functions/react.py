@@ -3,7 +3,7 @@ from classes.user import User
 import functions.call_function
 
 async def send_instructions(message) :
-    await message.channel.send("Usage: react add/remove text_to_react_to emoji_to_react_with")
+    await message.channel.send("Usage: react add/remove text_to_react_to = emoji_to_react_with")
 
 async def react(client, message, content) :
     new_content = "react_" + content

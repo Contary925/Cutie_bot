@@ -12,6 +12,7 @@ class User() :
         self.interactions = self.read_interactions(self.data)
         self.perms = self.read_perms(self.data)
         self.reactions = self.read_reactions(self.data)
+        self.responses = self.read_responses(self.data)
 
     def read_data(self, id) -> dict :
         with open('shared/user_data.json', 'r+') as f:
@@ -60,6 +61,11 @@ class User() :
             self.data_update("reactions", {})
         return data["reactions"]
 
+    def read_responses(self, data) -> str:
+            if not "responses" in data:
+                self.data_update("responses", {})
+            return data["responses"]
+
     def add_reaction(self, text, reaction) :
         if text in self.reactions :
             return 0 
@@ -72,6 +78,18 @@ class User() :
         self.data_update("reactions", self.reactions)
         return 1
 
+    def add_response(self, text, response) :
+            if text in self.responses :
+                return 0 
+            with open('shared/user_data.json', 'r+') as f:
+                data = json.load(f)
+            data[self.id]["responses"][text] = response
+            with open('shared/user_data.json', 'w') as f:
+                json.dump(data, f)
+            self.responses[text] = response
+            self.data_update("responses", self.responses)
+            return 1
+
     def delete_reaction(self, text) :
         if not text in self.reactions :
             return 0
@@ -82,6 +100,18 @@ class User() :
             json.dump(data, f)
         self.reactions.pop(text, None)
         self.data_update("reactions", self.reactions)
+        return 1
+
+    def delete_response(self, text) :
+        if not text in self.responses :
+            return 0
+        with open('shared/user_data.json', 'r+') as f:
+            data = json.load(f)
+        data[self.id]["responses"].pop(text, None)
+        with open('shared/user_data.json', 'w') as f:
+            json.dump(data, f)
+        self.responses.pop(text, None)
+        self.data_update("responses", self.responses)
         return 1
     
     def update_alias(self, alias_key, alias_value) :
