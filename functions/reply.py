@@ -60,7 +60,6 @@ async def reply_remove(message, content) :
         return await message.channel.send(f'No responses set to "{content}"!')
 
 async def check_for_replies(message) :
-    print("step 1")
     with open('shared/responses.json', 'r+') as f:
         common_responses = json.load(f)
     for text in common_responses :
@@ -72,13 +71,9 @@ async def check_for_replies(message) :
         return #no point in checking for responses if the user never even used the bot
     user = User(message.author.id, None) #the name is unimportant at the moment
     responses = user.responses #a dict of text:response pairs
-    print("step 2")
     for text in responses :
-        print("step 3")
         if text in message.content.lower():
-            print("step 4)")
             if user.perms == "administrator" :
-                print("step 5")
                 await message.channel.send(responses[text])
             else :
                 await message.channel.send(responses[text], allowed_mentions=discord.AllowedMentions(everyone=False, roles=False, users=False))    
