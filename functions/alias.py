@@ -47,4 +47,4 @@ async def alias_list(message, content) :
     if alias_list == f"{user.name}'s alias list: \n" :
         await message.channel.send("Your alias list is empty!")
     else :
-        await message.channel.send(alias_list)
+        await message.channel.send(alias_list, allowed_mentions=discord.AllowedMentions(everyone=False, roles=False, users=False))
