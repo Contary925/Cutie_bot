@@ -49,6 +49,7 @@ function_map: dict[str, Callable] = {
 function_alias: dict[str, str] = {
     "хаг" : "hug",
     "цем" : "kiss",
+    "кисс" : "kiss",
     "тык" : "boop",
     "пинг" : "ping",
     "кусь": "bite",
