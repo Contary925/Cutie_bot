@@ -117,7 +117,7 @@ async def shuffle(client, message):
     queue.shuffle()
     return await message.channel.send("Shuffled successfully!")
 
-async def push(client, message, content):
+async def push(client, message, content, auto=False):
     if not content.isdigit():
         return await message.channel.send("Incorrect index!")
     index = int(content)
@@ -143,13 +143,12 @@ async def push(client, message, content):
     if index == 1:
         return await message.channel.send(f"This song is already playing!")
     queue.push(index)
+    if not auto:
+        return await message.channel.send(f"Pushed song number {index} to play next!")
 
 async def playnum(client, message, content):
-    if not index.isdigit():
-        return await message.channel.send("Incorrect index!")
-    index = int(content)
-    push(client, message, index)
-    skip(client, message, auto=True)
+    await push(client, message, content, auto=True)
+    await skip(client, message, auto=True)
 
 #helper functions
 
