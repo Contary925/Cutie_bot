@@ -10,7 +10,7 @@ from auto_git_push import sync_to_github
 from functions.perms import *
 from functions.react import react, react_add, react_remove
 from functions.reply import reply, reply_add, reply_remove
-from functions.music import play, stop
+from functions.music import play, stop, skip, show_queue
 import inspect #to decide which parameters are actually needed to a function in the function map
 
 function_map: dict[str, Callable] = {
@@ -47,6 +47,8 @@ function_map: dict[str, Callable] = {
     "reply_remove": reply_remove,
     "play": play,
     "stop": stop,
+    "skip": skip,
+    "queue": show_queue,
 }
 
 function_alias: dict[str, str] = {
@@ -70,6 +72,7 @@ function_alias: dict[str, str] = {
     "gif_лист" : "gif_list",
     "gif_список" : "gif_list",
     "reaction" : "react",
+    "next" : "skip"
 }
 
 async def call_function(client, message, content) :
