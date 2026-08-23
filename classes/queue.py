@@ -22,6 +22,9 @@ class Queue():
             songs_list += f"{index}. **{self.current_song['title']}**\n"
         for song in self.songs:
             index += 1
+            if index>20:
+                songs_list += "Cannot display more songs..."
+                break
             songs_list += f"{index}. **{song['title']}**\n"
         return songs_list
     def shuffle(self):

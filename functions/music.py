@@ -136,7 +136,7 @@ async def push(client, message, content):
     queue = music_queues.setdefault(guild_id, Queue())
     if len(queue.songs) < index:
         return await message.channel.send(f"No song number **{index}** in the queue!")
-    queue.push[index]
+    queue.push(index)
 
 async def playnum(client, message, content):
     if not index.isdigit():
