@@ -25,16 +25,21 @@ async def play(client, message, content):
         voice_client = await channel.connect()
     guild_id = message.guild.id
     queue = music_queues.setdefault(guild_id, Queue())
-    song = await get_youtube_info(content)
-    if song is None:
-        return await message.channel.send(
+    songs = await get_youtube_info(content)
+    if not songs:
+        await message.channel.send(
             f"Couldn't find anything for **{content}**."
         )
-    queue.add(song)
-    if voice_client.is_playing():
-        await message.channel.send(f"Added **{song['title']}** to the queue.")
         return
+    for song in songs:
+        queue.add(song)
+    if len(songs) == 1:
+        await message.channel.send(f"Added **{songs[0]['title']}** to the queue.")
+    else:
+        await message.channel.send(f"Added **{len(songs)} songs** to the queue.")
     next_song = queue.next()
+    if voice_client.is_playing():
+        return
     queue.set_current(song)
     await play_song(
         voice_client,
@@ -90,15 +95,27 @@ async def get_youtube_info(query):
                 download=False
             )
     info = await asyncio.to_thread(extract)
+    # Playlist
+    if info.get("_type") == "playlist":
+        songs = []
+        for entry in info.get("entries", []):
+            if entry:
+                songs.append({
+                    "url": entry["url"],
+                    "title": entry.get("title", "Unknown"),
+                })
+        return songs
+    # Search result
     if "entries" in info:
         entries = info["entries"]
         if not entries:
-            return None
+            return []
         info = entries[0]
-    return {
+    # Single video
+    return [{
         "url": info["url"],
         "title": info.get("title", "Unknown"),
-    }
+    }]
 
 async def play_song(voice_client, song, queue, text_channel):
     source = discord.PCMVolumeTransformer(
