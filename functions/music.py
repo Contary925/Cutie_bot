@@ -2,6 +2,7 @@ import discord
 import yt_dlp
 import asyncio
 from classes.queue import Queue
+from urllib.parse import urlparse, parse_qs
 
 music_queues = {} #warning: this is a global variable!
 #it is, however, only being accessed and changed through guild_id keys.
@@ -37,10 +38,10 @@ async def play(client, message, content):
         await message.channel.send(f"Added **{songs[0]['title']}** to the queue.")
     else:
         await message.channel.send(f"Added **{len(songs)} songs** to the queue.")
-    next_song = queue.next()
     if voice_client.is_playing():
-        return
-    queue.set_current(song)
+            return
+    next_song = queue.next()
+    queue.set_current(next_song)
     await play_song(
         voice_client,
         next_song,
@@ -87,9 +88,19 @@ async def show_queue(client, message, content):
 
 async def get_youtube_info(query):
     def extract():
-        with yt_dlp.YoutubeDL(YTDLP_OPTIONS) as ydl:
-            if query.startswith(("http://", "https://")):
+        if query.startswith(("http://", "https://")):
+            parsed = urlparse(query)
+            params = parse_qs(parsed.query)
+            if "v" in params:
+                options = {
+                    **YTDLP_OPTIONS,
+                    "noplaylist": True,
+                }
+            else:
+                options = YTDLP_OPTIONS
+            with yt_dlp.YoutubeDL(options) as ydl:
                 return ydl.extract_info(query, download=False)
+        with yt_dlp.YoutubeDL(YTDLP_OPTIONS) as ydl:
             return ydl.extract_info(
                 f"ytsearch1:{query}",
                 download=False
