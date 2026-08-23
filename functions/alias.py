@@ -1,5 +1,6 @@
 import functions.call_function
 from classes.user import User
+import discord
 
 async def alias(client, message, content) :
     new_content = "alias_" + content

@@ -4,7 +4,7 @@ async def help(client, message, content) :
     new_content = "help_" + content
     called = await functions.call_function.call_function(client, message, new_content)
     if not called : #send default help message
-        text = """# Hello! I am **Cutie Bot**, Kissu's bot for personal use made with discord.py. 
+        text = """# Hello! I am **Missu**, Kissu's bot for personal use made with discord.py. 
 The prefix to use me is '**uwu**' (or '**уву**') - use it every time you want to call me!
 Here are some of my commands:
 1. **Interactions**: hug, kiss, pat, bite, boop, lick
@@ -19,10 +19,10 @@ Try: uwu help [category] for help with specific commands (such as: **uwu help al
 async def help_alias(message) :
     text = """# Add alias for interactions. 
 Examples: 
-1. **"uwu alias add Cutie = <@1529029241566662746>"**
-After this, you will be able to run "uwu spank Cutie" without actually having to mention me.
+1. **"uwu alias add Missu = <@1529029241566662746>"**
+After this, you will be able to run "uwu spank Missu without actually having to mention me.
 Note: you must actually **MENTION** the user to add an alias!
-2. "uwu alias remove Cutie" - removes an alias.
+2. "uwu alias remove Missu" - removes an alias.
 3. "uwu alias list" - sends the list of all alias you have added."""
     await message.channel.send(text)
 
