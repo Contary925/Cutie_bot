@@ -1,3 +1,5 @@
+import random
+
 class Queue():
     def __init__(self):
         self.songs = []
@@ -22,3 +24,5 @@ class Queue():
             index += 1
             songs_list += f"{index}. **{song['title']}**\n"
         return songs_list
+    def shuffle(self):
+        random.shuffle(self.songs)

@@ -26,6 +26,7 @@ async def play(client, message, content):
         voice_client = await channel.connect()
     guild_id = message.guild.id
     queue = music_queues.setdefault(guild_id, Queue())
+    await message.channel.send("Searching for your song...")
     songs = await get_youtube_info(content)
     if not songs:
         await message.channel.send(
@@ -82,6 +83,38 @@ async def show_queue(client, message, content):
         case _:
             return await message.channel.send(result)
 
+async def pause(client, message):
+    voice_client = message.guild.voice_client
+    if voice_client is None or not voice_client.is_playing():
+        await message.channel.send("Nothing is currently playing!")
+        return
+    voice_client.pause()
+    await message.channel.send("Paused.")
+
+async def resume(client, message):
+    voice_client = message.guild.voice_client
+    if voice_client is None or not voice_client.is_paused():
+        await message.channel.send("Nothing is currently paused!")
+        return
+    voice_client.resume()
+    await message.channel.send("Resumed.")
+
+async def shuffle(client, message):
+    if message.author.voice is None:
+        await message.channel.send(
+            "You must be in a voice channel to use this command!"
+        )
+        return
+    channel = message.author.voice.channel
+    voice_client = message.guild.voice_client
+    if voice_client is not None:
+        await voice_client.move_to(channel)
+    else:
+        voice_client = await channel.connect()
+    guild_id = message.guild.id
+    queue = music_queues.setdefault(guild_id, Queue())
+    queue.shuffle()
+    return await message.channel.send("Shuffled successfully!")
 
 
 #helper functions
