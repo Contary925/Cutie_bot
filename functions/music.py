@@ -134,8 +134,14 @@ async def push(client, message, content):
         voice_client = await channel.connect()
     guild_id = message.guild.id
     queue = music_queues.setdefault(guild_id, Queue())
-    if len(queue.songs) < index:
+    if index < 1:
+        return await message.channel.send(f"Incorrect index!")
+    if len(queue.songs)+1 < index:
         return await message.channel.send(f"No song number **{index}** in the queue!")
+    if index == 2:
+        return await message.channel.send(f"Song number **{index}** is already playing next!")
+    if index == 1:
+        return await message.channel.send(f"This song is already playing!")
     queue.push(index)
 
 async def playnum(client, message, content):

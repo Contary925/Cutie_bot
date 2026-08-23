@@ -30,5 +30,5 @@ class Queue():
     def shuffle(self):
         random.shuffle(self.songs)
     def push(self, index):
-        song = self.songs.pop(index)
+        song = self.songs.pop(index-2)
         self.songs.insert(0, song)
