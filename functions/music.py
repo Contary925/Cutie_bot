@@ -71,6 +71,8 @@ async def stop(client, message, content):
     if voice_client is not None:
         await message.channel.send("Leaving the voice channel.")
         await voice_client.disconnect()
+        if message.guild.id in music_queues:
+            music_queues[message.guild.id] = []
     else:
         await message.channel.send("Currently not playing anything!")
 
@@ -198,7 +200,14 @@ async def play_song(voice_client, song, queue, text_channel):
     source = discord.PCMVolumeTransformer(
         discord.FFmpegPCMAudio(
             song["url"],
-            before_options="-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5",
+            before_options=(
+                "-reconnect 1 "
+                "-reconnect_streamed 1 "
+                "-reconnect_on_network_error 1 "
+                "-reconnect_on_http_error 4xx,5xx "
+                "-reconnect_delay_max 2 "
+                "-reconnect_max_retries 5"
+            ),
             options="-vn",
         ),
         volume=0.5,
