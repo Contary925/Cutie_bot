@@ -134,7 +134,7 @@ async def push(client, message, content):
         voice_client = await channel.connect()
     guild_id = message.guild.id
     queue = music_queues.setdefault(guild_id, Queue())
-    if len(queue) < index:
+    if len(queue.songs) < index:
         return await message.channel.send(f"No song number **{index}** in the queue!")
     queue.push[index]
 
