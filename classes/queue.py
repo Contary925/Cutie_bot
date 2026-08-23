@@ -26,3 +26,6 @@ class Queue():
         return songs_list
     def shuffle(self):
         random.shuffle(self.songs)
+    def push(self, index):
+        song = self.songs.pop(index)
+        self.songs.insert(0, song)

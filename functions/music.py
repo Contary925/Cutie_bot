@@ -50,7 +50,7 @@ async def play(client, message, content):
         message.channel,
     )
 
-async def skip(client, message):
+async def skip(client, message, auto=False):
     if message.author.voice is None:
         await message.channel.send(
             "You must be in a voice channel to use this command!"
@@ -62,7 +62,8 @@ async def skip(client, message):
         await voice_client.move_to(channel)
     else:
         voice_client = await channel.connect()
-    await message.channel.send("Skipping...")
+    if not auto:
+        await message.channel.send("Skipping...")
     voice_client.stop()
 
 async def stop(client, message, content):
@@ -116,6 +117,33 @@ async def shuffle(client, message):
     queue.shuffle()
     return await message.channel.send("Shuffled successfully!")
 
+async def push(client, message, content):
+    if not content.isdigit():
+        return await message.channel.send("Incorrect index!")
+    index = int(content)
+    if message.author.voice is None:
+        await message.channel.send(
+            "You must be in a voice channel to use this command!"
+        )
+        return
+    channel = message.author.voice.channel
+    voice_client = message.guild.voice_client
+    if voice_client is not None:
+        await voice_client.move_to(channel)
+    else:
+        voice_client = await channel.connect()
+    guild_id = message.guild.id
+    queue = music_queues.setdefault(guild_id, Queue())
+    if len(queue) < index:
+        return await message.channel.send(f"No song number **{index}** in the queue!")
+    queue.push[index]
+
+async def playnum(client, message, content):
+    if not index.isdigit():
+        return await message.channel.send("Incorrect index!")
+    index = int(content)
+    push(client, message, index)
+    skip(client, message, auto=True)
 
 #helper functions
 
