@@ -12,6 +12,7 @@ ID.pi
 # Virtual environments
 .venv
 .env
+.missu
 
 #proxy config
 local_proxy.txt
