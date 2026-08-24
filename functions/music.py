@@ -45,10 +45,11 @@ async def play(client, message, content, pushing=False):
         random.shuffle(songs)
     counter = 0
     for song in songs:
-        queue.add(song)
         if pushing:
             queue.insert(counter, song)
             counter += 1
+        else:
+            queue.add(song)
     if len(songs) == 1:
         await message.channel.send(f"Added **{songs[0]['title']}** to the queue.")
     else:
