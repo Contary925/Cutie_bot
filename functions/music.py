@@ -16,11 +16,11 @@ YTDLP_OPTIONS = {
 }
 
 async def play(client, message, content):
-    match content:
-        case "favlist":
-            return await play_favlist(message)
-        case "favlist -s":
-            return await play_favlist(message, shuffle=True)
+    shuffle = content.endswith('-s')
+    if shuffle:
+        content = content[:-2].strip()
+    if content == "favlist":
+        return await play_favlist(message, shuffle)
     if message.author.voice is None:
         await message.channel.send(
             "You must be in a voice channel to use this command!"
@@ -41,6 +41,10 @@ async def play(client, message, content):
             f"Couldn't find anything for **{content}**."
         )
         return
+    if shuffle:
+        song_list = list(songs.items())
+        random.shuffle(song_list)
+        songs = dict(song_list)
     for song in songs:
         queue.add(song)
     if len(songs) == 1:
@@ -262,8 +266,8 @@ async def repeat(message):
     queue = music_queues.setdefault(guild_id, Queue())
     if queue.current_song is None:
         return await message.channel.send("Nothing is currently playing!")
-    queue.repeat_current
-    return message.channel.send("The current song will play once again!")
+    queue.repeat_current()
+    return await message.channel.send("The current song will play once again!")
 
 #helper functions
 
