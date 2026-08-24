@@ -42,9 +42,7 @@ async def play(client, message, content):
         )
         return
     if shuffle:
-        song_list = list(songs.items())
-        random.shuffle(song_list)
-        songs = dict(song_list)
+        random.shuffle(songs)
     for song in songs:
         queue.add(song)
     if len(songs) == 1:
