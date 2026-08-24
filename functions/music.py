@@ -259,7 +259,7 @@ async def play_favlist(message, shuffle=False):
         if first_iter:
             first_iter = False
             if voice_client.is_playing():
-                return
+                continue
             next_song = queue.next()
             queue.set_current(next_song)
             await play_song(
