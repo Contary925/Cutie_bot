@@ -245,7 +245,26 @@ async def play_favlist(message, shuffle=False):
         queue,
         message.channel,
     )
-    
+
+async def repeat(message):
+    if message.author.voice is None:
+        await message.channel.send(
+            "You must be in a voice channel to use this command!"
+        )
+        return
+    channel = message.author.voice.channel
+    voice_client = message.guild.voice_client
+    if voice_client is not None:
+        await voice_client.move_to(channel)
+    else:
+        voice_client = await channel.connect()
+    guild_id = message.guild.id
+    queue = music_queues.setdefault(guild_id, Queue())
+    if queue.current_song is None:
+        return await message.channel.send("Nothing is currently playing!")
+    queue.push(queue.current_song)
+    return message.channel.send("The current song will play once again!")
+
 #helper functions
 
 async def get_youtube_info(query):
