@@ -174,13 +174,49 @@ async def playnum(client, message, content):
     await push(client, message, content, auto=True)
     await skip(client, message, auto=True)
 
-async def favlist(message, content):
+async def favlist(client, message, content):
     match content:
         case '':
             user = User(message.author.id)
-            text = user.show_favlist()
-            await message.channel.send(text)
-            return
+            page = 0
+            total_pages = (len(user.favlist) + 19) // 20
+            text = user.show_favlist(page)
+            sent_message = await message.channel.send(text)
+            if total_pages <= 1:
+                return
+            await sent_message.add_reaction(':arrow_backward:')
+            await sent_message.add_reaction(':arrow_forward:')
+            def check(reaction, reactor):
+                return (
+                    reactor.id == message.author.id
+                    and reaction.message.id == sent_message.id
+                    and str(reaction.emoji) in (':arrow_backward:', ':arrow_forward:')
+                )
+            while True:
+                try:
+                    reaction, reactor = await client.wait_for(
+                        'reaction_add',
+                        timeout=60.0,
+                        check=check
+                    )
+                except asyncio.TimeoutError:
+                    break
+                if str(reaction.emoji) == ':arrow_forward:':
+                    if page < total_pages - 1:
+                        page += 1
+                        await sent_message.edit(
+                            content=user.show_favlist(page)
+                        )
+                elif str(reaction.emoji) == ':arrow_backward:':
+                    if page > 0:
+                        page -= 1
+                        await sent_message.edit(
+                            content=user.show_favlist(page)
+                        )
+                await sent_message.remove_reaction(
+                    reaction.emoji,
+                    reactor
+                )
         case 'clear':
             user = User(message.author.id)
             user.clear_favlist()
