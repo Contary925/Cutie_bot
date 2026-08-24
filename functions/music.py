@@ -175,9 +175,16 @@ async def playnum(client, message, content):
     await skip(client, message, auto=True)
 
 async def favlist(message, content):
-    if content == '':
-        user = User(message.author.id)
-        return await message.channel.send(user.show_favlist())
+    match content:
+        case '':
+            user = User(message.author.id)
+            text = user.show_favlist()
+            await message.channel.send(text)
+            return
+        case 'clear':
+            user = User(message.author.id)
+            user.clear_favlist()
+            return await message.channel.send('Favlist cleared!')
     if content.startswith('add'):
         await add_to_favlist(message, cutword(content, 'add'))
     if content.startswith('remove'):
@@ -193,7 +200,12 @@ async def add_to_favlist(message, content):
         return
     song = songs[0]
     user = User(message.author.id)
-    match user.add_to_favlist(song):
+    match user.add_to_favlist(
+        {
+            "url": song["webpage_url"],
+            "title": song["title"],
+        }
+    ):
         case 0:
             return await message.channel.send('The song is already in your favlist!')
         case 1:
@@ -240,10 +252,8 @@ async def play_favlist(message, shuffle=False):
         random.shuffle(songs)
         favlist = dict(songs)
     for song_url in favlist:
-        song = {
-            "url": song_url,
-            "title": favlist[song_url]
-        }
+        songs = await get_youtube_info(song_url)
+        song = songs[0]
         queue.add(song)
     if len(favlist) == 1:
         await message.channel.send(f"Added one song to the queue.")
@@ -308,6 +318,7 @@ async def get_youtube_info(query):
             if entry:
                 songs.append({
                     "url": entry["url"],
+                    "webpage_url": entry["webpage_url"],
                     "title": entry.get("title", "Unknown"),
                 })
         return songs
@@ -320,6 +331,7 @@ async def get_youtube_info(query):
     # Single video
     return [{
         "url": info["url"],
+        "webpage_url": info["webpage_url"],
         "title": info.get("title", "Unknown"),
     }]
 

@@ -67,10 +67,19 @@ class User() :
             self.data_update("responses", {})
         return data["responses"]
 
-    def read_favlist(self, data) -> dict :
+    def read_favlist(self, data) -> dict:
         if not "favlist" in data:
             self.data_update("favlist", {})
         return data["favlist"]
+
+    def clear_favlist(self) -> dict:
+        self.favlist = {}
+        self.data_update("favlist", self.favlist)
+        with open('shared/user_data.json', 'r+') as f:
+            data = json.load(f)
+        data[self.id]["favlist"] = {}
+        with open('shared/user_data.json', 'w') as f:
+            json.dump(data, f)
 
     def add_to_favlist(self, song: dict):
         if song["url"] in self.favlist:
