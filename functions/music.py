@@ -72,7 +72,7 @@ async def stop(client, message, content):
         await message.channel.send("Leaving the voice channel.")
         await voice_client.disconnect()
         if message.guild.id in music_queues:
-            music_queues[message.guild.id] = []
+            music_queues[message.guild.id] = None
     else:
         await message.channel.send("Currently not playing anything!")
 
