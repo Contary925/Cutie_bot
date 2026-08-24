@@ -15,7 +15,7 @@ YTDLP_OPTIONS = {
     "format": "bestaudio[abr<=128]/bestaudio",
 }
 
-async def play(client, message, content):
+async def play(client, message, content, pushing=False):
     shuffle = content.endswith('-s')
     if shuffle:
         content = content[:-2].strip()
@@ -43,8 +43,12 @@ async def play(client, message, content):
         return
     if shuffle:
         random.shuffle(songs)
+    counter = 0
     for song in songs:
         queue.add(song)
+        if pushing:
+            counter += 1
+            queue.insert(counter, song)
     if len(songs) == 1:
         await message.channel.send(f"Added **{songs[0]['title']}** to the queue.")
     else:
@@ -137,7 +141,7 @@ async def push(client, message, content, auto=False):
             case 'last':
                 index = 'last'
             case _:
-                return await play(client, message, content)
+                return await play(client, message, content, pushing=True)
     if message.author.voice is None:
         await message.channel.send(
             "You must be in a voice channel to use this command!"
