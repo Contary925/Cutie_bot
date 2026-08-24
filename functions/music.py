@@ -206,6 +206,11 @@ async def remove_from_favlist(message, content):
     
 
 async def play_favlist(message, shuffle=False):
+    #it is possible that this command is run by a user rather than
+    #automatically, in which case we need to know if they have
+    #specified shuffle or not
+    if message.content.endswith('-s'):
+        shuffle = True
     if message.author.voice is None:
         await message.channel.send(
             "You must be in a voice channel to use this command!"

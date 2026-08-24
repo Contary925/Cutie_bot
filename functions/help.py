@@ -83,7 +83,7 @@ async def help_favlist(message):
 2. **Uwu favlist add [source]** - add a song from a specified source to your favlist. Playlists are not supported.
 3. **Uwu favlist remove [index]** - remove the song with the specified index from your favlist.
 Example: **uwu favlist remove 3** - this will remove the 3rd song from your favlist
-4. **Uwu play favlist** - create a queue from your favlist and play it! (Or add everything from your favlist to queue if already playin)
+4. **Uwu play favlist** - create a queue from your favlist and play it! (Or add everything from your favlist to the queue if already playing)
 Note: specify a '-s' key to play or add your favlist songs in a random order: **uwu play favlist -s**
 Note: **this is faster than using YouTube playlists!**"""
     await message.channel.send(text)
