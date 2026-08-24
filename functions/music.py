@@ -251,10 +251,25 @@ async def play_favlist(message, shuffle=False):
         songs = list(favlist.items())
         random.shuffle(songs)
         favlist = dict(songs)
+    first_iter = True
     for song_url in favlist:
         songs = await get_youtube_info(song_url)
         song = songs[0]
         queue.add(song)
+        if first_iter:
+            first_iter = False
+            if voice_client.is_playing():
+                return
+            next_song = queue.next()
+            queue.set_current(next_song)
+            await play_song(
+                voice_client,
+                next_song,
+                queue,
+                message.channel,
+            )
+
+        
     if len(favlist) == 1:
         await message.channel.send(f"Added one song to the queue.")
     else:
