@@ -184,13 +184,13 @@ async def favlist(client, message, content):
             sent_message = await message.channel.send(text)
             if total_pages <= 1:
                 return
-            await sent_message.add_reaction(':arrow_backward:')
-            await sent_message.add_reaction(':arrow_forward:')
+            await sent_message.add_reaction('⬅️')
+            await sent_message.add_reaction('➡️')
             def check(reaction, reactor):
                 return (
                     reactor.id == message.author.id
                     and reaction.message.id == sent_message.id
-                    and str(reaction.emoji) in (':arrow_backward:', ':arrow_forward:')
+                    and str(reaction.emoji) in ('⬅️', '➡️')
                 )
             while True:
                 try:
@@ -201,13 +201,13 @@ async def favlist(client, message, content):
                     )
                 except asyncio.TimeoutError:
                     break
-                if str(reaction.emoji) == ':arrow_forward:':
+                if str(reaction.emoji) == '➡️':
                     if page < total_pages - 1:
                         page += 1
                         await sent_message.edit(
                             content=user.show_favlist(page)
                         )
-                elif str(reaction.emoji) == ':arrow_backward:':
+                elif str(reaction.emoji) == '⬅️':
                     if page > 0:
                         page -= 1
                         await sent_message.edit(
@@ -304,6 +304,7 @@ async def play_favlist(message, shuffle=False):
                 queue,
                 message.channel,
             )
+            await message.channel.send('Processing songs in background...')
 
         
     if len(favlist) == 1:

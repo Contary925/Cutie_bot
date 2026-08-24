@@ -107,17 +107,17 @@ class User() :
         self.data_update("favlist", self.favlist)
         return name
 
-    def show_favlist(self) -> str:
+    def show_favlist(self, page=0) -> str:
         if self.favlist == {}:
             return 'Your favlist is empty!'
+        songs = list(self.favlist.values())
+        start = page * 20
+        end = start + 20
         result = ''
-        index = 0
-        for song_url in self.favlist:
-            if index > 20:
-                result += 'Cannot display more songs...'
-                break
-            index += 1
-            result += f'{index}. {self.favlist[song_url]}\n'
+        for index, title in enumerate(songs[start:end], start=start + 1):
+            result += f'{index}. {title}\n'
+        if not result:
+            return 'No songs on this page.'
         return result
 
                 
