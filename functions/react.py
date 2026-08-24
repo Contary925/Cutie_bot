@@ -72,6 +72,18 @@ async def react_remove(message, content) :
     else :
         return await message.channel.send(f'No reactions set to "{content}"!')
 
+async def react_list(message, content) :
+    user = User(message.author.id, message.author.display_name)
+    reactions = user.reactions
+    reactions_list = f"{user.name}'s reactions list: \n"
+    for item in reactions :
+        reactions_list += f"{item}: {reactions[item]}\n"
+    if reactions_list == f"{user.name}'s reactions list: \n" :
+        await message.channel.send("Your reactions list is empty!")
+    else :
+        await message.channel.send(reactions_list)
+
+
 async def check_reaction(message, reaction) :
     try :
         await message.add_reaction(reaction)

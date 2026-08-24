@@ -8,8 +8,8 @@ from functions.help import *
 from functions.gifs import *
 from auto_git_push import sync_to_github
 from functions.perms import *
-from functions.react import react, react_add, react_remove
-from functions.reply import reply, reply_add, reply_remove
+from functions.react import react, react_add, react_remove, react_list
+from functions.reply import reply, reply_add, reply_remove, reply_list
 from functions.music import play, stop, skip, queue, shuffle, pause, resume, push, playnum, favlist, repeat, play_favlist
 import inspect #to decide which parameters are actually needed to a function in the function map
 
@@ -44,9 +44,11 @@ function_map: dict[str, Callable] = {
     "react": react,
     "react_add": react_add,
     "react_remove": react_remove,
+    "react_list": react_list,
     "reply": reply,
     "reply_add": reply_add,
     "reply_remove": reply_remove,
+    "reply_list": reply_list,
     "play": play,
     "stop": stop,
     "skip": skip,

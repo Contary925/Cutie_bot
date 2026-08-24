@@ -59,6 +59,17 @@ async def reply_remove(message, content) :
     else :
         return await message.channel.send(f'No responses set to "{content}"!')
 
+async def reply_list(message, content) :
+    user = User(message.author.id, message.author.display_name)
+    responses = user.responses
+    responses_list = f"{user.name}'s responses list: \n"
+    for item in responses :
+        responses_list += f"{item}: {responses[item]}\n"
+    if responses_list == f"{user.name}'s responses list: \n" :
+        await message.channel.send("Your responses list is empty!")
+    else :
+        await message.channel.send(responses_list, allowed_mentions=discord.AllowedMentions(everyone=False, roles=False, users=False))
+
 async def check_for_replies(message) :
     with open('shared/responses.json', 'r+') as f:
         common_responses = json.load(f)
