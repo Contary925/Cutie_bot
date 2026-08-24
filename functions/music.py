@@ -137,8 +137,7 @@ async def push(client, message, content, auto=False):
             case 'last':
                 index = 'last'
             case _:
-                play(client, message, content)
-                return
+                return await play(client, message, content)
     if message.author.voice is None:
         await message.channel.send(
             "You must be in a voice channel to use this command!"
