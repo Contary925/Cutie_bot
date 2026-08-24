@@ -4,7 +4,7 @@ from classes.gif import Gif
 
 class User() :
 
-    def __init__(self, id, name):
+    def __init__(self, id, name=None):
         self.id = str(id)
         self.name = name
         self.data = self.read_data(self.id)
@@ -13,6 +13,7 @@ class User() :
         self.perms = self.read_perms(self.data)
         self.reactions = self.read_reactions(self.data)
         self.responses = self.read_responses(self.data)
+        self.favlist = self.read_favlist(self.data) #music favlist
 
     def read_data(self, id) -> dict :
         with open('shared/user_data.json', 'r+') as f:
@@ -62,9 +63,55 @@ class User() :
         return data["reactions"]
 
     def read_responses(self, data) -> str:
-            if not "responses" in data:
-                self.data_update("responses", {})
-            return data["responses"]
+        if not "responses" in data:
+            self.data_update("responses", {})
+        return data["responses"]
+
+    def read_favlist(self, data) -> dict :
+        if not "favlist" in data:
+            self.data_update("favlist", {})
+        return data["favlist"]
+
+    def add_to_favlist(self, song: dict):
+        if song["url"] in self.favlist:
+            return 0
+        with open('shared/user_data.json', 'r+') as f:
+            data = json.load(f)
+        data[self.id]["favlist"][song["url"]] = song["title"]
+        with open('shared/user_data.json', 'w') as f:
+            json.dump(data, f)
+        self.favlist[song["url"]] = song["title"]
+        self.data["favlist"][song["url"]] = song["title"]
+        return 1
+
+    def remove_from_favlist(self, index: int) -> str:
+        if index > len(self.favlist):
+            return 'Song with index not found'
+        url = list(self.favlist)[index]
+        name = self.favlist[url]
+        del self.favlist[url]
+        with open('shared/user_data.json', 'r+') as f:
+            data = json.load(f)
+        del data[self.id]["favlist"][url]
+        with open('shared/user_data.json', 'w') as f:
+            json.dump(data, f)
+        self.data_update("favlist", self.favlist)
+        return name
+
+    def show_favlist(self) -> str:
+        if self.favlist == {}:
+            return 'Your favlist is empty!'
+        result = ''
+        index = 0
+        for song_url in self.favlist:
+            if index > 20:
+                result += 'Cannot display more songs...'
+                break
+            index += 1
+            result += f'{index}. {self.favlist[song_url]}\n'
+        return result
+
+                
 
     def add_reaction(self, text, reaction) :
         if text in self.reactions :
