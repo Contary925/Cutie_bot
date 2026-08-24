@@ -70,6 +70,20 @@ async def reply_list(message, content) :
     else :
         await message.channel.send(responses_list, allowed_mentions=discord.AllowedMentions(everyone=False, roles=False, users=False))
 
+async def reply_listall(message, content):
+    with open("shared/responses.json", 'r+') as f:
+        responses = json.load(f)
+    responses_list = f"Global responses list: \n"
+    for item in responses :
+        responses_list += f"{item}: {responses[item]}\n"
+    if responses_list == f"Global responses list: \n" :
+        await message.channel.send("The global responses list is empty!")
+    else :
+        await message.channel.send(responses_list, allowed_mentions=discord.AllowedMentions(everyone=False, roles=False, users=False))
+     
+
+
+
 async def check_for_replies(message) :
     with open('shared/responses.json', 'r+') as f:
         common_responses = json.load(f)

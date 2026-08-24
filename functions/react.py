@@ -83,6 +83,18 @@ async def react_list(message, content) :
     else :
         await message.channel.send(reactions_list)
 
+async def react_listall(message, content):
+    with open("shared/reactions.json", 'r+') as f:
+        reactions = json.load(f)
+    reactions_list = f"Global reactions list: \n"
+    for item in reactions :
+        reactions_list += f"{item}: {reactions[item]}\n"
+    if reactions_list == f"Global reactions list: \n" :
+        await message.channel.send("The global reactions list is empty!")
+    else :
+        await message.channel.send(reactions_list)
+ 
+
 
 async def check_reaction(message, reaction) :
     try :
