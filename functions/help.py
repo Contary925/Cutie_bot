@@ -70,6 +70,7 @@ Example: uwu play <https://www.youtube.com/playlist?list=PL43syiOjn5rQ6Bj0EP4CV2
 4. **Uwu push [index]** - specify a song in queue which you want to play next. 
 For example, if the 5th song in queue is "Toram Online BGM - King Piton", then "**uwu push 5**" will make it play next (become number 2 in the queue).
 **Uwu push last** will push the last song in the queue instead.
+**Uwu push [source]** will add song(s) to queue and play them next.
 5. **Uwu playnum [index]** - specify a song in queue you want to play right now. The current song will be skipped.
 **Uwu playnum last** will play the last song in the queue immediately.
 6. **Uwu shuffle** - shuffle the queue.

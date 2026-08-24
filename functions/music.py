@@ -130,12 +130,15 @@ async def shuffle(client, message):
     return await message.channel.send("Shuffled successfully!")
 
 async def push(client, message, content, auto=False):
-    if (not (content.isdigit() or content == 'last')):
-        return await message.channel.send("Incorrect index!")
     if content.isdigit():
         index = int(content)
     else:
-        index = 'last'
+        match content:
+            case 'last':
+                index = 'last'
+            case _:
+                play(client, message, content)
+                return
     if message.author.voice is None:
         await message.channel.send(
             "You must be in a voice channel to use this command!"
