@@ -112,7 +112,7 @@ async def queue(message, content):
         if index == 1:
             return await message.channel.send(f"This song is already playing! You can use a skip command if you want to skip it.")
         queue.songs.pop(index-2)
-        return
+        return await message.channel.send(f"Removed song number **{index}** from the queue!")
     guild_id = message.guild.id
     queue = music_queues.setdefault(guild_id, Queue())
     result = queue.show()
