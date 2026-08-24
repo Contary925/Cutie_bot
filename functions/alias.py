@@ -7,7 +7,7 @@ async def alias(client, message, content) :
     #if there's nothing making sense after "alias" then call_function will just pass anyway
     called = await functions.call_function.call_function(client, message, new_content)
     if not called : #if failed to call a function, send instructions
-        await message.channel.send("Usage: uwu alias add/remove text1=text2.\nFor example: uwu alias add Cutie=<@1529029241566662746>")
+        await message.channel.send("Usage: uwu alias add/remove text1=text2.\nFor example: uwu alias add Missu=<@1529029241566662746>")
 
 async def alias_add(message, content) :
     user = User(message.author.id, message.author.display_name)
@@ -26,7 +26,7 @@ async def alias_add(message, content) :
         else :
             await message.channel.send("Something went wrong when adding an alias.")
     else :
-        await message.channel.send("Usage: uwu alias add text1=text2.\nFor example: uwu alias add Cutie=<@1529029241566662746>")
+        await message.channel.send("Usage: uwu alias add text1=text2.\nFor example: uwu alias add Missu=<@1529029241566662746>")
 
 async def alias_remove(message, content) :
     user = User(message.author.id, message.author.display_name)

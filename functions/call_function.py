@@ -33,6 +33,8 @@ function_map: dict[str, Callable] = {
     "help_gifs": help_gifs,
     "help_reactions": help_reactions,
     "help_interactions": help_interactions,
+    "help_music": help_music,
+    "help_favlist": help_favlist,
     "gif" : gif,
     "gif_add" : gif_add,
     "gif_remove" : gif_remove,

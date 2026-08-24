@@ -87,7 +87,7 @@ class User() :
     def remove_from_favlist(self, index: int) -> str:
         if index > len(self.favlist):
             return 'Song with index not found'
-        url = list(self.favlist)[index]
+        url = list(self.favlist)[index-1]
         name = self.favlist[url]
         del self.favlist[url]
         with open('shared/user_data.json', 'r+') as f:
