@@ -262,7 +262,7 @@ async def repeat(message):
     queue = music_queues.setdefault(guild_id, Queue())
     if queue.current_song is None:
         return await message.channel.send("Nothing is currently playing!")
-    queue.push(queue.current_song)
+    queue.repeat_current
     return message.channel.send("The current song will play once again!")
 
 #helper functions

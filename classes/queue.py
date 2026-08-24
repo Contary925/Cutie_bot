@@ -32,3 +32,6 @@ class Queue():
     def push(self, index):
         song = self.songs.pop(index-2)
         self.songs.insert(0, song)
+    def repeat_current(self):
+        song = self.current_song
+        self.songs.insert(0, song)
