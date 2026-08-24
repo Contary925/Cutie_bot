@@ -91,7 +91,28 @@ async def stop(client, message, content):
     else:
         await message.channel.send("Currently not playing anything!")
 
-async def show_queue(message):
+async def queue(message, content):
+    if content.startswith('remove'):
+        content = cutword(content, 'remove').strip()
+        match content:
+            case 'last':
+                index = 'last'
+            case _:
+                if not content.isdigit():
+                    return
+                index = int(content)
+        guild_id = message.guild.id
+        queue = music_queues.setdefault(guild_id, Queue())
+        if index == 'last':
+            index = len(queue.songs)+1
+        if index < 1:
+            return await message.channel.send(f"Incorrect index!")
+        if len(queue.songs)+1 < index:
+            return await message.channel.send(f"No song number **{index}** in the queue!")
+        if index == 1:
+            return await message.channel.send(f"This song is already playing! You can use a skip command if you want to skip it.")
+        queue.songs.pop(index-2)
+        return
     guild_id = message.guild.id
     queue = music_queues.setdefault(guild_id, Queue())
     result = queue.show()

@@ -10,7 +10,7 @@ from auto_git_push import sync_to_github
 from functions.perms import *
 from functions.react import react, react_add, react_remove
 from functions.reply import reply, reply_add, reply_remove
-from functions.music import play, stop, skip, show_queue, shuffle, pause, resume, push, playnum, favlist, repeat, play_favlist
+from functions.music import play, stop, skip, queue, shuffle, pause, resume, push, playnum, favlist, repeat, play_favlist
 import inspect #to decide which parameters are actually needed to a function in the function map
 
 function_map: dict[str, Callable] = {
@@ -50,7 +50,7 @@ function_map: dict[str, Callable] = {
     "play": play,
     "stop": stop,
     "skip": skip,
-    "queue": show_queue,
+    "queue": queue,
     "shuffle": shuffle,
     "pause": pause,
     "resume": resume,
