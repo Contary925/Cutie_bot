@@ -18,7 +18,6 @@ YTDLP_OPTIONS = {
     "extract_flat": "in_playlist",  # Instantly grabs top-level info without deep parsing
     "skip_download": True,
     "youtube_include_dash_manifest": False,
-    "extractor_args": {"youtube": {"player_client": ["ios", "web"]}},
 }
 
 # 2. Reuse ONE global instance to eliminate the setup penalty entirely
