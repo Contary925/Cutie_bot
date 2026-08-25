@@ -320,19 +320,19 @@ async def play_favlist(message, shuffle=False):
         if songs:  # Ensure the list isn't empty (e.g., if a video was deleted)
             song = songs[0]
             queue.add(song)
-            # if first_iter:
-            #     first_iter = False
-            #     if voice_client.is_playing():
-            #         continue
-            #     next_song = queue.next()
-            #     queue.set_current(next_song)
-            #     await play_song(
-            #         voice_client,
-            #         next_song,
-            #         queue,
-            #         message.channel,
-            #     )
-            #     await message.channel.send('Processing songs in background...')
+            if first_iter:
+                first_iter = False
+                if voice_client.is_playing():
+                    continue
+                next_song = queue.next()
+                queue.set_current(next_song)
+                await play_song(
+                    voice_client,
+                    next_song,
+                    queue,
+                    message.channel,
+                )
+                await message.channel.send('Processing songs in background...')
 
         
     if len(favlist) == 1:
