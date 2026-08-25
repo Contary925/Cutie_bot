@@ -4,30 +4,18 @@ import yt_dlp
 
 # 1. Base Configuration
 YTDLP_OPTIONS = {
-    "format": "worstaudio/worst[ext=webm]/worst", 
-    "noplaylist": True,
-    "nocheckcertificate": True,
-    "ignoreerrors": True,           
-    "logtostderr": False,
-    "quiet": True,
-    "no_warnings": True,
-    "default_search": "ytsearch",
-    "source_address": "0.0.0.0",
-    "skip_download": True,
-    "extract_flat": "in_playlist", 
-    "youtube_include_dash_manifest": False,
-    "youtube_include_hls_manifest": False, 
-    "extractor_args": {
-        "youtube": {
-            "player_client": ["android", "ios"], 
-            "skip": ["dash", "hls"] 
-        }
-    },
+    'format': 'bestaudio/best',
+    'extract_flat': False, # Keep False for single video, True for playlist discovery
+    'skip_download': True,
+    'force_generic_extractor': False,
+    'youtube_include_dash_manifest': False, # Disabling this saves massive time
+    'nocheckcertificate': True,
+    'quiet': True,
 }
 
 # Pre-instantiate these globally once to save CPU and RAM cycles
 ydl_client = yt_dlp.YoutubeDL(YTDLP_OPTIONS)
-ydl_playlist_client = yt_dlp.YoutubeDL({**YTDLP_OPTIONS, "extract_flat": True})
+ydl_playlist_client = yt_dlp.YoutubeDL({**YTDLP_OPTIONS})
 ydl_search_client = yt_dlp.YoutubeDL({
     **YTDLP_OPTIONS,
     "extract_flat": False,       
