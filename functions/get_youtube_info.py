@@ -2,9 +2,8 @@ import asyncio
 from urllib.parse import urlparse, parse_qs
 import yt_dlp
 
-# 1. Base Configuration (No global extract_flat!)
+# 1. Base Configuration
 YTDLP_OPTIONS = {
-    # ⬇️ Changes quality to standard 128kbps Opus/M4A or worse
     "format": "worstaudio/worst[ext=webm]/worst", 
     "noplaylist": True,
     "nocheckcertificate": True,
@@ -15,22 +14,27 @@ YTDLP_OPTIONS = {
     "default_search": "ytsearch",
     "source_address": "0.0.0.0",
     "skip_download": True,
-    
-    # ⚡ Extra performance flags
-    "extract_flat": "in_playlist", # Speeds up search results dramatically
+    "extract_flat": "in_playlist", 
     "youtube_include_dash_manifest": False,
-    "youtube_include_hls_manifest": False, # Disables heavy HLS streaming files
-    
-    # 📱 Prioritize fast, lightweight clients
+    "youtube_include_hls_manifest": False, 
     "extractor_args": {
         "youtube": {
-            "player_client": ["android", "ios"], # Web client is slow and gets heavily rate-limited
-            "skip": ["dash", "hls"] # Skip manifest parsing to save CPU
+            "player_client": ["android", "ios"], 
+            "skip": ["dash", "hls"] 
         }
     },
 }
 
+# Pre-instantiate these globally once to save CPU and RAM cycles
 ydl_client = yt_dlp.YoutubeDL(YTDLP_OPTIONS)
+ydl_playlist_client = yt_dlp.YoutubeDL({**YTDLP_OPTIONS, "extract_flat": True})
+ydl_search_client = yt_dlp.YoutubeDL({
+    **YTDLP_OPTIONS,
+    "extract_flat": False,       
+    "playlist_items": "1",       
+    "youtube_include_dash_manifest": False, 
+    "youtube_include_nsig_html": False,     
+})
 
 async def get_youtube_info(query: str):
     def extract():
@@ -38,28 +42,15 @@ async def get_youtube_info(query: str):
             parsed = urlparse(query)
             params = parse_qs(parsed.query)
             
-            # PLAYLISTS: Fast ID and title extraction
+            # PLAYLISTS
             if "list=" in query and "v" not in params:
-                playlist_opts = {
-                    **YTDLP_OPTIONS, 
-                    "extract_flat": True
-                }
-                with yt_dlp.YoutubeDL(playlist_opts) as ydl:
-                    return ydl.extract_info(query, download=False)
+                return ydl_playlist_client.extract_info(query, download=False)
             
             # SINGLE URLS
             return ydl_client.extract_info(query, download=False, process=True)
             
-        # SEARCH QUERIES: Stripping out heavy assets on the fly
-        search_opts = {
-            **YTDLP_OPTIONS,
-            "extract_flat": False,       # Allow it to resolve the stream URL...
-            "playlist_items": "1",       # ...but strictly stop after the 1st match
-            "youtube_include_dash_manifest": False, # Bypasses heavy manifest parsing
-            "youtube_include_nsig_html": False,     # Disables heavy client JS rendering
-        }
-        with yt_dlp.YoutubeDL(search_opts) as ydl:
-            return ydl.extract_info(f"ytsearch1:{query}", download=False, process=True)
+        # SEARCH QUERIES
+        return ydl_search_client.extract_info(f"ytsearch1:{query}", download=False, process=True)
 
     info = await asyncio.to_thread(extract)
     if not info:
@@ -71,9 +62,9 @@ async def get_youtube_info(query: str):
         if not entries:
             return []
         
-        # If it came from our text search block
-        if query.startswith("ytsearch1:") or not query.startswith(("http://", "https://")):
-            info = entries[0] # Grab the fully processed song object
+        # FIX 1: If it came from search, entries[0] contains the actual data
+        if not query.startswith(("http://", "https://")):
+            info = entries[0] 
         else:
             # Explicit playlist URL link mapping
             songs = []
@@ -87,8 +78,13 @@ async def get_youtube_info(query: str):
                     })
             return songs
 
-    # Pull out the working stream URL destination
-    stream_url = info.get("url") or info.get("webpage_url")
+    # FIX 2: Safely extract stream URL even if nested inside yt-dlp's formats block
+    stream_url = info.get("url")
+    if not stream_url and info.get("formats"):
+        stream_url = info["formats"][0].get("url")
+        
+    if not stream_url:
+        stream_url = info.get("webpage_url")
     
     return [{
         "url": stream_url,
