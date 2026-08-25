@@ -12,10 +12,6 @@ music_queues = {} #warning: this is a global variable!
 #it is, however, only being accessed and changed through guild_id keys.
 #be careful when mutating it!
 
-YTDLP_OPTIONS = {
-    "format": "bestaudio[abr<=128]/bestaudio",
-}
-
 async def play(client, message, content, pushing=False):
     shuffle = content.endswith('-s')
     if shuffle:
