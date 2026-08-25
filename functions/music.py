@@ -310,31 +310,24 @@ async def play_favlist(message, shuffle=False):
         random.shuffle(songs)
         favlist = dict(songs)
     first_iter = True
-    # for song_url in favlist:
-    #     songs = await get_youtube_info(song_url)
-    #     song = songs[0]
-    #     queue.add(song)
-    tasks = [get_youtube_info(song_url) for song_url in favlist]
-    results = await asyncio.gather(*tasks)
-    for songs in results:
-        if songs:  # Ensure the list isn't empty (e.g., if a video was deleted)
-            song = songs[0]
-            queue.add(song)
-            if first_iter:
-                first_iter = False
-                if voice_client.is_playing():
-                    continue
-                next_song = queue.next()
-                queue.set_current(next_song)
-                await play_song(
-                    voice_client,
-                    next_song,
-                    queue,
-                    message.channel,
-                )
-                await message.channel.send('Processing songs in background...')
-
-        
+    for song_url in favlist:
+        songs = await get_youtube_info(song_url)
+        song = songs[0]
+        queue.add(song)
+        if first_iter:
+            first_iter = False
+            if voice_client.is_playing():
+                continue
+            next_song = queue.next()
+            queue.set_current(next_song)
+            await play_song(
+                voice_client,
+                next_song,
+                queue,
+                message.channel,
+            )
+            await message.channel.send('Processing songs in background...')
+   
     if len(favlist) == 1:
         await message.channel.send(f"Added one song to the queue.")
     else:
