@@ -6,6 +6,7 @@ from urllib.parse import urlparse, parse_qs
 from classes.user import User
 from functions.cutword import cutword
 from functions.get_youtube_info import get_youtube_info
+from functions.get_stream_url import get_stream_url
 import random
 
 music_queues = {} #warning: this is a global variable!
@@ -305,14 +306,20 @@ async def play_favlist(message, shuffle=False):
         songs = list(favlist.items())
         random.shuffle(songs)
         favlist = dict(songs)
-    first_iter = True
+    count = 0
+    process_message = await message.channel.send('Processing songs in background...')
     for song_url in favlist:
-        songs = await get_youtube_info(song_url)
-        song = songs[0]
+        count += 1
+        process_message = await process_message.edit(f'Processing songs in background... {count}/{len(favlist)}')
+        print(song_url)
+        stream_url = await get_stream_url(song_url)
+        song = {
+            "title": favlist[song_url],
+            "url": stream_url
+        }
+        print(song)
         queue.add(song)
-        if first_iter:
-            await message.channel.send('Processing songs in background...')
-            first_iter = False
+        if count == 1:
             if voice_client.is_playing():
                 continue
             next_song = queue.next()
@@ -323,7 +330,7 @@ async def play_favlist(message, shuffle=False):
                 queue,
                 message.channel,
             )
-   
+    await process_message.delete()
     if len(favlist) == 1:
         await message.channel.send(f"Added one song to the queue.")
     else:
@@ -370,14 +377,14 @@ async def play_song(voice_client, song, queue, text_channel):
                 "-reconnect_on_network_error 1 "
                 "-reconnect_on_http_error 4xx,5xx "
                 "-reconnect_delay_max 2 "
-                "-probesize 32 "          # ⚡ Reduces initial connection latency
-                "-analyzeduration 0"      # ⚡ Starts playing instantly without analyzing the file
+                "-probesize 32 "         
+                "-analyzeduration 0"   
             ),
             options=(
-                "-vn "                    # Strips video data
-                "-ac 2 "                  # Forces 2 channels (stereo) for Discord
-                "-ar 48000 "              # Forces 48kHz sampling rate (Discord's native format)
-                "-b:a 64k"                # Limits bitrate to 64kbps to save bandwidth
+                "-vn "      
+                "-ac 2 "          
+                "-ar 48000 "   
+                "-b:a 64k"   
             ),
         ),
     volume=0.5,
