@@ -2,25 +2,24 @@ import asyncio
 from urllib.parse import urlparse, parse_qs
 import yt_dlp
 
-# 1. High-speed base configuration
+# 1. Base Configuration (No global extract_flat!)
 YTDLP_OPTIONS = {
     "format": "bestaudio/best",
     "noplaylist": True,
     "nocheckcertificate": True,
-    "ignoreerrors": True,           # Prevents one dead video from crashing a loop
+    "ignoreerrors": True,           
     "logtostderr": False,
     "quiet": True,
     "no_warnings": True,
     "default_search": "ytsearch",
     "source_address": "0.0.0.0",
     
-    # --- Fast Extraction Flags ---
-    "extract_flat": "in_playlist",  # Instantly grabs top-level info without deep parsing
+    # Safe Speed flags
     "skip_download": True,
     "youtube_include_dash_manifest": False,
+    "extractor_args": {"youtube": {"player_client": ["android", "ios", "web"]}},
 }
 
-# 2. Reuse ONE global instance to eliminate the setup penalty entirely
 ydl_client = yt_dlp.YoutubeDL(YTDLP_OPTIONS)
 
 async def get_youtube_info(query: str):
@@ -29,49 +28,57 @@ async def get_youtube_info(query: str):
             parsed = urlparse(query)
             params = parse_qs(parsed.query)
             
-            # PLAYLISTS: Kept separate with extract_flat
+            # PLAYLISTS: Fast ID and title extraction
             if "list=" in query and "v" not in params:
-                playlist_opts = {**YTDLP_OPTIONS, "extract_flat": True}
+                playlist_opts = {
+                    **YTDLP_OPTIONS, 
+                    "extract_flat": True
+                }
                 with yt_dlp.YoutubeDL(playlist_opts) as ydl:
                     return ydl.extract_info(query, download=False)
             
-            # SINGLE VIDEOS: Uses global options (extract_flat is False)
+            # SINGLE URLS
             return ydl_client.extract_info(query, download=False, process=True)
             
-        # SEARCH QUERIES: Crucial change here!
-        # We explicitly use an isolated downloader call with process=True to 
-        # force yt-dlp to fully resolve the direct underlying audio link.
-        with yt_dlp.YoutubeDL(YTDLP_OPTIONS) as ydl:
+        # SEARCH QUERIES: Stripping out heavy assets on the fly
+        search_opts = {
+            **YTDLP_OPTIONS,
+            "extract_flat": False,       # Allow it to resolve the stream URL...
+            "playlist_items": "1",       # ...but strictly stop after the 1st match
+            "youtube_include_dash_manifest": False, # Bypasses heavy manifest parsing
+            "youtube_include_nsig_html": False,     # Disables heavy client JS rendering
+        }
+        with yt_dlp.YoutubeDL(search_opts) as ydl:
             return ydl.extract_info(f"ytsearch1:{query}", download=False, process=True)
 
     info = await asyncio.to_thread(extract)
     if not info:
         return []
 
-    # 1. Handle Playlists (Flat extraction layout)
-    if info.get("_type") == "playlist" and "entries" in info and not query.startswith("ytsearch1:"):
-        # We check to make sure it's not a text-search playlist
-        songs = []
-        for entry in info.get("entries", []):
-            if entry:
-                video_url = entry.get("url") or f"https://www.youtube.com/watch?v={entry['id']}"
-                songs.append({
-                    "url": video_url, 
-                    "webpage_url": video_url,
-                    "title": entry.get("title", "Unknown"),
-                })
-        return songs
-
-    # 2. Handle Search results (When processed, it unwraps the nested entry)
-    if "entries" in info:
+    # Handle containers
+    if info.get("_type") == "playlist" and "entries" in info:
         entries = info["entries"]
         if not entries:
             return []
-        info = entries[0] # Grab the single matching dictionary
+        
+        # If it came from our text search block
+        if query.startswith("ytsearch1:") or not query.startswith(("http://", "https://")):
+            info = entries[0] # Grab the fully processed song object
+        else:
+            # Explicit playlist URL link mapping
+            songs = []
+            for entry in entries:
+                if entry:
+                    video_url = entry.get("url") or f"https://youtube.com{entry['id']}"
+                    songs.append({
+                        "url": video_url, 
+                        "webpage_url": video_url,
+                        "title": entry.get("title", "Unknown"),
+                    })
+            return songs
 
-    # 3. Handle Single Videos / Resolved Search Links
-    # Extract the absolute raw audio link or fall back to webpage_url safely
-    stream_url = info.get("url")
+    # Pull out the working stream URL destination
+    stream_url = info.get("url") or info.get("webpage_url")
     
     return [{
         "url": stream_url,

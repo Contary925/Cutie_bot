@@ -315,6 +315,7 @@ async def play_favlist(message, shuffle=False):
         song = songs[0]
         queue.add(song)
         if first_iter:
+            await message.channel.send('Processing songs in background...')
             first_iter = False
             if voice_client.is_playing():
                 continue
@@ -326,7 +327,6 @@ async def play_favlist(message, shuffle=False):
                 queue,
                 message.channel,
             )
-            await message.channel.send('Processing songs in background...')
    
     if len(favlist) == 1:
         await message.channel.send(f"Added one song to the queue.")
