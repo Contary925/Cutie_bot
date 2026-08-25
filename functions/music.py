@@ -32,26 +32,29 @@ async def play(client, message, content, pushing=False):
         voice_client = await channel.connect()
     guild_id = message.guild.id
     queue = music_queues.setdefault(guild_id, Queue())
-    await message.channel.send("Searching for your song...")
+    process_message = await message.channel.send("Searching for your song...")
     songs = await get_youtube_info(content)
     if not songs:
         await message.channel.send(
             f"Couldn't find anything for **{content}**."
         )
+        await process_message.delete()
         return
     if shuffle:
         random.shuffle(songs)
     counter = 0
     for song in songs:
+        await process_message.edit(content=f'Processing songs in background... {counter+1}/{len(songs)}')
         if pushing:
-            queue.insert(counter, song)
-            counter += 1
+            queue.insert(counter, song)    
         else:
             queue.add(song)
+        counter += 1 
     if len(songs) == 1:
         await message.channel.send(f"Added **{songs[0]['title']}** to the queue.")
     else:
         await message.channel.send(f"Added **{len(songs)} songs** to the queue.")
+    await process_message.delete()
     if voice_client.is_playing():
             return
     next_song = queue.next()
@@ -310,7 +313,7 @@ async def play_favlist(message, shuffle=False):
     process_message = await message.channel.send('Processing songs in background...')
     for song_url in favlist:
         count += 1
-        process_message = await process_message.edit(f'Processing songs in background... {count}/{len(favlist)}')
+        process_message = await process_message.edit(content=f'Processing songs in background... {count}/{len(favlist)}')
         print(song_url)
         stream_url = await get_stream_url(song_url)
         song = {
