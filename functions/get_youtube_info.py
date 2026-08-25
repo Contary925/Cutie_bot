@@ -4,7 +4,8 @@ import yt_dlp
 
 # 1. Base Configuration (No global extract_flat!)
 YTDLP_OPTIONS = {
-    "format": "bestaudio/best",
+    # ⬇️ Changes quality to standard 128kbps Opus/M4A or worse
+    "format": "worstaudio/worst[ext=webm]/worst", 
     "noplaylist": True,
     "nocheckcertificate": True,
     "ignoreerrors": True,           
@@ -13,11 +14,20 @@ YTDLP_OPTIONS = {
     "no_warnings": True,
     "default_search": "ytsearch",
     "source_address": "0.0.0.0",
-    
-    # Safe Speed flags
     "skip_download": True,
+    
+    # ⚡ Extra performance flags
+    "extract_flat": "in_playlist", # Speeds up search results dramatically
     "youtube_include_dash_manifest": False,
-    "extractor_args": {"youtube": {"player_client": ["android", "ios", "web"]}},
+    "youtube_include_hls_manifest": False, # Disables heavy HLS streaming files
+    
+    # 📱 Prioritize fast, lightweight clients
+    "extractor_args": {
+        "youtube": {
+            "player_client": ["android", "ios"], # Web client is slow and gets heavily rate-limited
+            "skip": ["dash", "hls"] # Skip manifest parsing to save CPU
+        }
+    },
 }
 
 ydl_client = yt_dlp.YoutubeDL(YTDLP_OPTIONS)

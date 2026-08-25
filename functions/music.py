@@ -369,11 +369,18 @@ async def play_song(voice_client, song, queue, text_channel):
                 "-reconnect_streamed 1 "
                 "-reconnect_on_network_error 1 "
                 "-reconnect_on_http_error 4xx,5xx "
-                "-reconnect_delay_max 2"
+                "-reconnect_delay_max 2 "
+                "-probesize 32 "          # ⚡ Reduces initial connection latency
+                "-analyzeduration 0"      # ⚡ Starts playing instantly without analyzing the file
             ),
-            options="-vn",
+            options=(
+                "-vn "                    # Strips video data
+                "-ac 2 "                  # Forces 2 channels (stereo) for Discord
+                "-ar 48000 "              # Forces 48kHz sampling rate (Discord's native format)
+                "-b:a 64k"                # Limits bitrate to 64kbps to save bandwidth
+            ),
         ),
-        volume=0.5,
+    volume=0.5,
     )
     loop = asyncio.get_running_loop()
     def playback_finished(error):
