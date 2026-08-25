@@ -29,32 +29,32 @@ async def get_youtube_info(query: str):
             parsed = urlparse(query)
             params = parse_qs(parsed.query)
             
-            # If it's a direct playlist link, override extract_flat to True
+            # PLAYLISTS: Kept separate with extract_flat
             if "list=" in query and "v" not in params:
                 playlist_opts = {**YTDLP_OPTIONS, "extract_flat": True}
                 with yt_dlp.YoutubeDL(playlist_opts) as ydl:
                     return ydl.extract_info(query, download=False)
             
-            # Single video URL: use the fast global client
-            # process=True forces it to resolve the final audio stream URL
+            # SINGLE VIDEOS: Uses global options (extract_flat is False)
             return ydl_client.extract_info(query, download=False, process=True)
             
-        # Search query execution
-        return ydl_client.extract_info(f"ytsearch1:{query}", download=False)
+        # SEARCH QUERIES: Crucial change here!
+        # We explicitly use an isolated downloader call with process=True to 
+        # force yt-dlp to fully resolve the direct underlying audio link.
+        with yt_dlp.YoutubeDL(YTDLP_OPTIONS) as ydl:
+            return ydl.extract_info(f"ytsearch1:{query}", download=False, process=True)
 
-    # Offload the blocking thread
     info = await asyncio.to_thread(extract)
     if not info:
         return []
 
-    # 3. Handle Playlists (Flat extraction fallback)
-    if info.get("_type") == "playlist":
+    # 1. Handle Playlists (Flat extraction layout)
+    if info.get("_type") == "playlist" and "entries" in info and not query.startswith("ytsearch1:"):
+        # We check to make sure it's not a text-search playlist
         songs = []
         for entry in info.get("entries", []):
             if entry:
-                # Flat extraction doesn't give a direct audio stream 'url' instantly.
-                # We provide the direct watch URL, which your player will resolve instantly when it plays.
-                video_url = entry.get("url") or f"https://youtube.com{entry['id']}"
+                video_url = entry.get("url") or f"https://www.youtube.com/watch?v={entry['id']}"
                 songs.append({
                     "url": video_url, 
                     "webpage_url": video_url,
@@ -62,17 +62,19 @@ async def get_youtube_info(query: str):
                 })
         return songs
 
-    # 4. Handle Search results
+    # 2. Handle Search results (When processed, it unwraps the nested entry)
     if "entries" in info:
         entries = info["entries"]
         if not entries:
             return []
-        info = entries[0]
+        info = entries[0] # Grab the single matching dictionary
 
-    # 5. Handle Single Videos
-    # yt-dlp puts the streaming audio link in 'url'
+    # 3. Handle Single Videos / Resolved Search Links
+    # Extract the absolute raw audio link or fall back to webpage_url safely
+    stream_url = info.get("url")
+    
     return [{
-        "url": info.get("url", info.get("webpage_url")),
+        "url": stream_url,
         "webpage_url": info.get("webpage_url"),
         "title": info.get("title", "Unknown"),
     }]
