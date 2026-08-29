@@ -14,6 +14,7 @@ class User() :
         self.reactions = self.read_reactions(self.data)
         self.responses = self.read_responses(self.data)
         self.favlist = self.read_favlist(self.data) #music favlist
+        self.playlists = self.data.get('playlists', {})
 
     def read_data(self, id) -> dict :
         with open('shared/user_data.json', 'r+') as f:
@@ -24,7 +25,7 @@ class User() :
                 "interactions": {},
             }
         with open('shared/user_data.json', 'w') as f:
-                json.dump(data, f)
+                json.dump(data, f, indent=4)
         return data[id]
     
     def data_update(self, key, value) : #a function to use if a key is missing in user data for whatever reason
@@ -32,7 +33,7 @@ class User() :
             data = json.load(f)
         data[self.id][key] = value
         with open('shared/user_data.json', 'w') as f:
-            json.dump(data, f)
+            json.dump(data, f, indent=4)
         self.data[key] = value
         
     def read_alias(self, data) -> dict :
@@ -79,7 +80,7 @@ class User() :
             data = json.load(f)
         data[self.id]["favlist"] = {}
         with open('shared/user_data.json', 'w') as f:
-            json.dump(data, f)
+            json.dump(data, f, indent=4)
 
     def add_to_favlist(self, song: dict):
         if song["url"] in self.favlist:
@@ -88,7 +89,7 @@ class User() :
             data = json.load(f)
         data[self.id]["favlist"][song["url"]] = song["title"]
         with open('shared/user_data.json', 'w') as f:
-            json.dump(data, f)
+            json.dump(data, f, indent=4)
         self.favlist[song["url"]] = song["title"]
         self.data["favlist"][song["url"]] = song["title"]
         return 1
@@ -103,7 +104,7 @@ class User() :
             data = json.load(f)
         del data[self.id]["favlist"][url]
         with open('shared/user_data.json', 'w') as f:
-            json.dump(data, f)
+            json.dump(data, f, indent=4)
         self.data_update("favlist", self.favlist)
         return name
 
@@ -129,7 +130,7 @@ class User() :
             data = json.load(f)
         data[self.id]["reactions"][text] = reaction
         with open('shared/user_data.json', 'w') as f:
-            json.dump(data, f)
+            json.dump(data, f, indent=4)
         self.reactions[text] = reaction
         self.data_update("reactions", self.reactions)
         return 1
@@ -141,7 +142,7 @@ class User() :
                 data = json.load(f)
             data[self.id]["responses"][text] = response
             with open('shared/user_data.json', 'w') as f:
-                json.dump(data, f)
+                json.dump(data, f, indent=4)
             self.responses[text] = response
             self.data_update("responses", self.responses)
             return 1
@@ -153,7 +154,7 @@ class User() :
             data = json.load(f)
         data[self.id]["reactions"].pop(text, None)
         with open('shared/user_data.json', 'w') as f:
-            json.dump(data, f)
+            json.dump(data, f, indent=4)
         self.reactions.pop(text, None)
         self.data_update("reactions", self.reactions)
         return 1
@@ -165,7 +166,7 @@ class User() :
             data = json.load(f)
         data[self.id]["responses"].pop(text, None)
         with open('shared/user_data.json', 'w') as f:
-            json.dump(data, f)
+            json.dump(data, f, indent=4)
         self.responses.pop(text, None)
         self.data_update("responses", self.responses)
         return 1
@@ -176,7 +177,7 @@ class User() :
             data = json.load(f)
         data[self.id]["alias"][alias_key] = alias_value
         with open('shared/user_data.json', 'w') as f:
-            json.dump(data, f)
+            json.dump(data, f, indent=4)
         self.alias[alias_key] = alias_value
         self.data_update("alias", self.alias)
         return 1
@@ -192,7 +193,7 @@ class User() :
             data[self.id]["interactions"][type][other.id] = 0
         data[self.id]["interactions"][type][other.id] += 1
         with open('shared/user_data.json', 'w') as f:
-            json.dump(data, f)
+            json.dump(data, f, indent=4)
         self.interactions = data[self.id]["interactions"]
         return self.interactions[type][other.id]
     
@@ -203,7 +204,7 @@ class User() :
         if alias_key in data[self.id]["alias"] :
             del data[self.id]["alias"][alias_key] 
             with open('shared/user_data.json', 'w') as f:
-                json.dump(data, f)
+                json.dump(data, f, indent=4)
             return 1
         return 0
 
@@ -279,3 +280,29 @@ class User() :
             url = url
         )
         await message.channel.send(embed = embed)
+
+    async def playlist_create(self, name):
+        if name in self.playlists:
+            return False
+        self.playlists[name] = {}
+        self.data_update('playlists', self.playlists)
+        return True
+
+    async def playlist_delete(self, name):
+        if name not in self.playlists:
+            return False
+        del self.playlists[name]
+        self.data_update('playlists', self.playlists)
+        return True
+
+    async def add_to_playlist(self, playlist, song):
+        self.playlists[playlist][song["webpage_url"]] = song["title"]
+        self.data_update('playlists', self.playlists)
+        return
+
+    async def remove_from_playlist(self, playlist, index):
+        song_url = list(self.playlists[playlist])[index-1]
+        title = self.playlists[playlist][song_url]["title"]
+        del self.playlists[playlist][song_url]
+        self.data_update('playlists', self.playlists)
+        return title
