@@ -23,7 +23,7 @@ class Queue():
         for song in self.songs:
             index += 1
             if index>20:
-                songs_list += "Cannot display more songs..."
+                songs_list += "Cannot display more songs...\nPlease refrain from creating very long queues as streaming URLs may expire over time."
                 break
             songs_list += f"{index}. **{song['title']}**\n"
         return songs_list
