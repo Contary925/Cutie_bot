@@ -63,7 +63,8 @@ async def add_to_playlist(client, message, args):
         await user.add_to_playlist(playlist, song)
     match count:
         case 1:
-            return await message.channel.send(f'Added {count} song to playlist **{playlist}**!')
+            title = song["title"]
+            return await message.channel.send(f'Added the song **{title}** to playlist **{playlist}**!')
         case _:
             return await message.channel.send(f'Added {count} songs to playlist **{playlist}**!')
 
