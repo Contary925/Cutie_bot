@@ -302,7 +302,7 @@ class User() :
 
     async def remove_from_playlist(self, playlist, index):
         song_url = list(self.playlists[playlist])[index-1]
-        title = self.playlists[playlist][song_url]["title"]
+        title = self.playlists[playlist][song_url]
         del self.playlists[playlist][song_url]
         self.data_update('playlists', self.playlists)
         return title
