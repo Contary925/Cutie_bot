@@ -413,7 +413,6 @@ async def play_song(voice_client, song, queue, text_channel):
             handle_song_finished(voice_client, queue, text_channel), loop
         )
         return
-    await text_channel.send(f"Buffering stream for **{song.get('title', 'Unknown Title')}**...")
     user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
     FFMPEG_OPTIONS = {
         'before_options': (
@@ -423,10 +422,11 @@ async def play_song(voice_client, song, queue, text_channel):
             f'-headers "User-Agent: {user_agent}\r\n" '
             '-rw_timeout 5000000 '
             '-max_delay 500000 '
+            '-rtbufsize 15M'
         ),
         'options': (
-            '-vn '
-            '-bufsize 4000k'
+        '-vn '
+        '-b:a 192k '
         )
     }
     try:
