@@ -1,6 +1,7 @@
 import discord
 import yt_dlp
 import asyncio
+import os
 from classes.queue import Queue
 from urllib.parse import urlparse, parse_qs
 from classes.user import User
@@ -370,7 +371,7 @@ async def repeat(message):
 
 #helper functions
 
-async def play_song(voice_client, song, queue, text_channel):
+async def old_play_song(voice_client, song, queue, text_channel):
     source = discord.PCMVolumeTransformer(
         discord.FFmpegPCMAudio(
             song["url"],
@@ -404,6 +405,52 @@ async def play_song(voice_client, song, queue, text_channel):
     await text_channel.send(
         f"Playing **{song['title']}**"
     )
+
+async def play_song(voice_client, song, queue, text_channel):
+    if not song:
+        loop = asyncio.get_running_loop()
+        asyncio.run_coroutine_threadsafe(
+            handle_song_finished(voice_client, queue, text_channel), loop
+        )
+        return
+    await text_channel.send(f"Buffering stream for **{song.get('title', 'Unknown Title')}**...")
+    user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+    FFMPEG_OPTIONS = {
+        'before_options': (
+            '-reconnect 1 '
+            '-reconnect_streamed 1 '
+            '-reconnect_delay_max 2 '
+            f'-headers "User-Agent: {user_agent}\r\n" '
+            '-rw_timeout 5000000 '
+            '-max_delay 500000 '
+        ),
+        'options': (
+            '-vn '
+            '-bufsize 4000k'
+        )
+    }
+    try:
+        source = discord.PCMVolumeTransformer(
+            discord.FFmpegPCMAudio(song["url"], **FFMPEG_OPTIONS),
+            volume=0.5
+        )
+    except Exception as e:
+        print(f"Buffer initialization error: {e}")
+        await text_channel.send(f"Error: {e}")
+        loop = asyncio.get_running_loop()
+        asyncio.run_coroutine_threadsafe(
+            handle_song_finished(voice_client, queue, text_channel), loop
+        )
+        return
+    loop = asyncio.get_running_loop()
+    def playback_finished(error):
+        if error:
+            print(f"Playback error: {error}")
+        asyncio.run_coroutine_threadsafe(
+            handle_song_finished(voice_client, queue, text_channel), loop
+        )
+    voice_client.play(source, after=playback_finished)
+    await text_channel.send(f"Playing **{song.get('title', 'Unknown Title')}**")
 
 async def handle_song_finished(voice_client, queue, text_channel):
     next_song = queue.next()

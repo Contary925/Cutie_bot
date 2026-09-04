@@ -11,6 +11,14 @@ YTDLP_OPTIONS = {
     'youtube_include_dash_manifest': False, # Disabling this saves massive time
     'nocheckcertificate': True,
     'quiet': True,
+    'extractor_args': {
+        'youtube': {
+            'player_client': ['web', 'mweb']
+        }
+    },
+    'http_headers': {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+    }
 }
 
 # Pre-instantiate these globally once to save CPU and RAM cycles
@@ -69,7 +77,11 @@ async def get_youtube_info(query: str):
     # FIX 2: Safely extract stream URL even if nested inside yt-dlp's formats block
     stream_url = info.get("url")
     if not stream_url and info.get("formats"):
-        stream_url = info["formats"][0].get("url")
+        audio_formats = [f for f in info["formats"] if f.get("vcodec") == "none"]
+        if audio_formats:
+            stream_url = audio_formats[-1].get("url") # Grab the best available audio format URL
+        else:
+            stream_url = info["formats"][-1].get("url")
         
     if not stream_url:
         stream_url = info.get("webpage_url")
